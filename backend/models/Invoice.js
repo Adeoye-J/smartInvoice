@@ -66,6 +66,11 @@ const invoiceSchema = new mongoose.Schema(
             enum: ["Paid", "Unpaid"],
             default: "Unpaid",
         },
+        templateId: { 
+            type: String, 
+            default: 'Classic',
+            enum: ['Classic', 'Modern', 'Minimal'] 
+        },
         subTotal: Number,
         taxTotal: Number,
         total: Number,

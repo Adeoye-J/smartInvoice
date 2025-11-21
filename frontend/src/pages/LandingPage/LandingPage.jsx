@@ -9,19 +9,25 @@ import UseCases from '../../components/landing/UseCases'
 import Stats from '../../components/landing/Stats'
 import HowItWorks from '../../components/landing/HowItWorks'
 import Benefits from '../../components/landing/Benefits'
+import Pricing from '../../components/landing/Pricing'
+import CTASection from '../../components/landing/CTASection'
+import { useAuth } from '../../context/AuthContext'
 
 const LandingPage = () => {
+
+    const {isAuthenticated} = useAuth();
+
   return (
     <div className='bg-[#ffffff] text-gray-600'>
         <Header />
         <main>
-            <Hero />
+            <Hero isAuthenticated={isAuthenticated} />
             <Stats />
             <HowItWorks />
             <Benefits />
-            <LandingPage />
             <UseCases />
-            <Features />
+            <Pricing />
+            <CTASection isAuthenticated={isAuthenticated} />
             <Testimonials />
             <Faqs />
         </main>

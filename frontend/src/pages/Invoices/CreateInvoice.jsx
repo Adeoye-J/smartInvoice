@@ -32,28 +32,14 @@ const CreateInvoice = ({existingInvoice, onSave}) => {
             billTo: { clientName: "", email: "", address: "", phone: "" },
             items: [{name: "", quantity: 1, unitPrice: 0, taxPercent: 0}],
             notes: "",
-            paymentTerms: "Net 15"
+            paymentTerms: "Net 15",
+            templateId: "Classic",
         }
     );
     const [loading, setLoading] = useState(false)
     const [isGeneratingNumber, setIsGeneratingNumber] = useState(!existingInvoice);
 
     useEffect(() => {
-        const aiData = location.state?.aiData;
-
-        if (aiData) {
-            setFormData(prev => ({
-                ...prev,
-                billTo: {
-                    clientName: aiData.clientName || "",
-                    email: aiData.email || "",
-                    address: aiData.address || "",
-                    phone: ""
-                },
-                items: aiData.items || [{ name: "", quantity: 1, unitPrice: 0, taxPercent: 0 }],
-            }));
-        }
-
         if (existingInvoice) {
             setFormData({
                 ...existingInvoice,
@@ -84,54 +70,39 @@ const CreateInvoice = ({existingInvoice, onSave}) => {
         }
     }, [existingInvoice]);
 
-    // const handleInputChange = (e, section, index) => {
-    //     const {name, value} = e.target;
-    //     if (section) {
-    //         setFormData((prev) => ({...prev, [section]: {...prev[section], [name]: value}}))
-    //         // setFormData({...formData, [section]: {...formData[section], [name]: value}})
-    //     } else if (index !== undefined) {
-    //         const newItems = {...formData.items};
-    //         newItems[index] = {...newItems[index], [name]: value};
-    //         setFormData((prev) => ({...prev, items: newItems}));
-    //         // setFormData((prev) => ({...prev, items: {...prev.items, [index]: {...prev.items[index], [name]: value}}}));
-    //     } else {
-    //         setFormData((prev) => ({...prev, [name]: value}));
-    //     }
-    // };
-
     const handleInputChange = (e, section = null, index) => {
-  const { name, value } = e.target;
+        const { name, value } = e.target;
 
-  // numeric fields on items: quantity, unitPrice, taxPercent
-  const isNumericField = (fieldName) => ["quantity", "unitPrice", "taxPercent"].includes(fieldName);
+        // numeric fields on items: quantity, unitPrice, taxPercent
+        const isNumericField = (fieldName) => ["quantity", "unitPrice", "taxPercent"].includes(fieldName);
 
-  if (section) {
-    setFormData(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [name]: value,
-      }
-    }));
-    return;
-  }
+        if (section) {
+            setFormData(prev => ({
+            ...prev,
+            [section]: {
+                ...prev[section],
+                [name]: value,
+            }
+            }));
+            return;
+        }
 
-  if (index !== undefined && index !== null) {
-    setFormData(prev => {
-      const items = Array.isArray(prev.items) ? [...prev.items] : [];
-      const newValue = isNumericField(name) ? (value === "" ? "" : Number(value)) : value;
-      items[index] = {
-        ...items[index],
-        [name]: newValue,
-      };
-      return { ...prev, items };
-    });
-    return;
-  }
+        if (index !== undefined && index !== null) {
+            setFormData(prev => {
+                const items = Array.isArray(prev.items) ? [...prev.items] : [];
+                const newValue = isNumericField(name) ? (value === "" ? "" : Number(value)) : value;
+                items[index] = {
+                    ...items[index],
+                    [name]: newValue,
+                };
+                return { ...prev, items };
+            });
+            return;
+        }
 
-  // top-level field
-  setFormData(prev => ({ ...prev, [name]: value }));
-};
+        // top-level field
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
 
     const handleAddItem = () => {
         setFormData({...formData, items: [...formData.items, { name: "", quantity: 1, unitPrice: 0, taxPercent: 0 }]});
@@ -143,29 +114,19 @@ const CreateInvoice = ({existingInvoice, onSave}) => {
         // setFormData({...formData, items: {...formData.items.filter((_, i) => i !== index)}});
     };
 
-    // const {subTotal, taxTotal, total} = (() => {
-    //     let subTotal = 0, taxTotal = 0;
-    //     formData.items.forEach((item) => {
-    //         const itemTotal = (item.quantity || 0) * (item.unitPrice || 0);
-    //         subTotal += itemTotal;
-    //         taxTotal += itemTotal * ((item.taxPercent || 0) / 100);
-    //     })
-    //     return { subTotal, taxTotal, total: subTotal + taxTotal };
-    // })();
-
     const { subTotal, taxTotal, total } = (() => {
         let subTotal = 0, taxTotal = 0;
         const items = Array.isArray(formData.items) ? formData.items : [];
 
         items.forEach(item => {
             // coerce to numbers with fallback 0
-            const qty = Number(item.quantity) || 0;
+            const quantity = Number(item.quantity) || 0;
             const price = Number(item.unitPrice) || 0;
-            const taxPct = Number(item.taxPercent) || 0;
+            const taxPercent = Number(item.taxPercent) || 0;
 
-            const itemTotal = qty * price;
+            const itemTotal = quantity * price;
             subTotal += itemTotal;
-            taxTotal += itemTotal * (taxPct / 100);
+            taxTotal += itemTotal * (taxPercent / 100);
         });
 
         const total = subTotal + taxTotal;
@@ -209,7 +170,7 @@ const CreateInvoice = ({existingInvoice, onSave}) => {
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-sm shadow-gray-100 border border-slate-200">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <InputField 
                         label={"Invoice Number"}
                         name={"invoiceNumber"}
@@ -232,6 +193,15 @@ const CreateInvoice = ({existingInvoice, onSave}) => {
                         value={formData.dueDate}
                         onChange={handleInputChange}
                     />
+                    <SelectField 
+                        label={"Template Style"}
+                        name={"templateId"}
+                        value={formData.templateId}
+                        onChange={handleInputChange}
+                        options={["Classic", "Modern", "Minimal"]}
+                    />
+                    {/* <div className="bg-white p-6 rounded-lg shadow-sm shadow-gray-100 border border-slate-200 space-y-4">
+                    </div> */}
                 </div>
             </div>
 
@@ -245,7 +215,7 @@ const CreateInvoice = ({existingInvoice, onSave}) => {
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow-sm shadow-gray-100 border border-slate-200 space-y-4">
                     <h3 className="text-lg font-semibold text-slate-900 mb-2">Bill To</h3>
-                    <InputField label={"Client Name"} name={"clientName"} value={formData.billFrom.clientName} onChange={(e) => handleInputChange(e, "billTo")} />
+                    <InputField label={"Client Name"} name={"clientName"} value={formData.billTo.clientName} onChange={(e) => handleInputChange(e, "billTo")} />
                     <InputField label={"Client Email"} type="email" name={"email"} value={formData.billTo.email} onChange={(e) => handleInputChange(e, "billTo")} />
                     <TextareaField label="Client Address" name="address" value={formData.billTo.address} onChange={(e) => handleInputChange(e, "billTo")} />
                     <InputField label={"Client Phone"} name={"phone"} value={formData.billTo.phone} onChange={(e) => handleInputChange(e, "billTo")} />

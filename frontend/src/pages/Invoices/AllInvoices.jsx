@@ -110,9 +110,6 @@ const AllInvoices = () => {
                     <p className="text-sm text-slate-600 mt-1">Manage all your invoices in one place.</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    {/* <Button variant='secondary' onClick={() => setIsAiModalOpen(true)} icon={Sparkles}>
-                        Create with AI
-                    </Button> */}
                     <Button onClick={() => navigate("/invoices/new")} icon={Plus}>
                         Create Invoice
                     </Button>
@@ -152,7 +149,7 @@ const AllInvoices = () => {
                             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className='w-full sm:w-auto h-10 px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500'>
                                 <option value="All">All Statuses</option>
                                 <option value="Paid">Paid</option>
-                                <option value="Pending">Pending</option>
+                                {/* <option value="Pending">Pending</option> */}
                                 <option value="Unpaid">Unpaid</option>
                             </select>
                         </div>

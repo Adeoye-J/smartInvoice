@@ -1,3 +1,5 @@
+import { CheckCircle } from "lucide-react"
+
 const Pricing = () => {
   const plans = [
     {
@@ -86,7 +88,7 @@ const Pricing = () => {
                 ))}
               </ul>
               
-              <button className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${plan.popular ? 'bg-linear-to-r from-blue-600 to-blue-700 text-white hover:shadow-xl' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}>
+              <button className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 cursor-pointer ${plan.popular ? 'bg-linear-to-r from-blue-600 to-blue-700 text-white hover:shadow-xl' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}>
                 {plan.cta}
               </button>
             </div>

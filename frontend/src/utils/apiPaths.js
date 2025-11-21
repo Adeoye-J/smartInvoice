@@ -6,6 +6,7 @@ export const API_PATHS = {
         LOGIN: "/api/auth/login", // Authenticate user & return JWT token
         GET_PROFILE: "/api/auth/me", // Get logged-in user details
         UPDATE_PROFILE: "/api/auth/me", // Update profile details (PUT)
+        CONNECT_GMAIL : "/api/auth/google/url", // Get Google OAuth URL
     },
 
     INVOICE: {
@@ -14,6 +15,8 @@ export const API_PATHS = {
         GET_INVOICE_BY_ID: (id) => `/api/invoices/${id}`,
         UPDATE_INVOICE: (id) => `/api/invoices/${id}`,
         DELETE_INVOICE: (id) => `/api/invoices/${id}`,
+        SEND_INVOICE_EMAIL: (id) => `/api/invoices/${id}/send-email`,
+        GENERATE_PDF: (id) => `/api/invoices/${id}/generate-pdf`,
     },
 
     // AI: {

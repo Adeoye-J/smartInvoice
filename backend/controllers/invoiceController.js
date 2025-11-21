@@ -1,4 +1,5 @@
 const Invoice = require("../models/Invoice");
+const { generatePdfBufferFromInvoice } = require('../utils/pdfGenerator');
 
 // @desc    Create new invoice
 // @route   POST /api/invoices
@@ -14,7 +15,8 @@ exports.createInvoice = async (req, res) => {
             billTo,
             items,
             notes,
-            paymentTerms
+            paymentTerms,
+            templateId
         } = req.body;
 
         // Subtotal calculation
@@ -37,6 +39,7 @@ exports.createInvoice = async (req, res) => {
             items,
             notes,
             paymentTerms,
+            templateId,
             subTotal,
             taxTotal,
             total,
@@ -100,6 +103,7 @@ exports.updateInvoice = async (req, res) => {
             items,
             notes,
             paymentTerms,
+            templateId,
             status,
         } = req.body;
 
@@ -126,6 +130,7 @@ exports.updateInvoice = async (req, res) => {
                 items,
                 notes,
                 paymentTerms,
+                templateId,
                 status,
                 subTotal,
                 taxTotal,
@@ -159,3 +164,29 @@ exports.deleteInvoice = async (req, res) => {
             .json({message: "Error Deleting Invoice", error: error.message})
     }
 };
+
+
+
+// GET /api/invoices/:id/pdf   -> generate PDF on server and return it
+exports.generatePdf = async (req, res) => {
+// router.get('/:id/pdf', asyncHandler(async (req, res) => {
+  const invoiceId = req.params.id;
+
+  // 1) load invoice from DB (adjust projection/populate to your needs)
+  const invoice = await Invoice.findById(invoiceId).lean();
+  if (!invoice) return res.status(404).json({ message: 'Invoice not found' });
+
+  // 2) generate pdf buffer with your utility
+  const pdfBuffer = await generatePdfBufferFromInvoice(invoice);
+
+  // 3) send PDF bytes back to client
+  res.set({
+    'Content-Type': 'application/pdf',
+    'Content-Length': pdfBuffer.length,
+    'Content-Disposition': `attachment; filename=invoice-${invoice.invoiceNumber || invoice._id}.pdf`,
+  });
+
+  return res.send(pdfBuffer);
+};
+
+// module.exports = router;

@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Invoice <%= invoice.invoiceNumber %></title>
+  <style>
+    body { font-family: Arial, sans-serif; color:#222; margin:0; padding:20px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; }
+    h1 { margin:0; font-size:20px; }
+    .company, .client { font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin-top:16px; }
+    table th, table td { padding:8px 6px; border-bottom:1px solid #eee; text-align:left; }
+    .right { text-align:right; }
+    .totals { margin-top: 12px; width: 100%; display:flex; justify-content:flex-end; }
+    .totals .box { width:260px; }
+    footer { margin-top:24px; font-size:12px; color:#666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1><%= invoice.billFrom?.businessName || 'From' %></h1>
+        <div class="company"><%= invoice.billFrom?.address || '' %></div>
+        <div class="company"><%= invoice.billFrom?.email || '' %></div>
+      </div>
+
+      <div style="text-align:right;">
+        <strong>INVOICE</strong>
+        <div># <%= invoice.invoiceNumber %></div>
+        <div><%= new Date(invoice.invoiceDate).toLocaleDateString() %></div>
+        <div>Due: <%= new Date(invoice.dueDate).toLocaleDateString() %></div>
+      </div>
+    </header>
+
+    <section>
+      <strong>Bill To:</strong>
+      <div class="client"><%= invoice.billTo?.clientName || '' %></div>
+      <div class="client"><%= invoice.billTo?.email || '' %></div>
+      <div class="client"><%= invoice.billTo?.address || '' %></div>
+    </section>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th style="width:90px;">Qty</th>
+          <th style="width:120px;" class="right">Price</th>
+          <th style="width:120px;" class="right">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% (invoice.items || []).forEach(function(it){ %>
+          <tr>
+            <td><%= it.name %></td>
+            <td><%= it.quantity %></td>
+            <td class="right"><%= Number(it.unitPrice || 0).toFixed(2) %></td>
+            <td class="right"><%= Number(it.total || 0).toFixed(2) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <div class="totals">
+      <div class="box">
+        <div style="display:flex;justify-content:space-between;"><span>Subtotal</span><span class="right">$<%= Number(invoice.subTotal||0).toFixed(2) %></span></div>
+        <div style="display:flex;justify-content:space-between;"><span>Tax</span><span class="right">$<%= Number(invoice.taxTotal||0).toFixed(2) %></span></div>
+        <hr />
+        <div style="display:flex;justify-content:space-between;font-weight:bold;"><span>Total</span><span class="right">$<%= Number(invoice.total||0).toFixed(2) %></span></div>
+      </div>
+    </div>
+
+    <% if (invoice.notes) { %>
+      <footer>
+        <strong>Notes</strong>
+        <div><%= invoice.notes %></div>
+      </footer>
+    <% } %>
+  </div>
+</body>
+</html>

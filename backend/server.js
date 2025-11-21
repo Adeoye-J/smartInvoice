@@ -22,11 +22,14 @@ app.use(
 connectDB();
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Routes
 app.use("/api/auth", authRoutes)
 app.use("/api/invoices", invoiceRoutes)
+
+// basic root
+app.get('/', (req, res) => res.send('API running'));
 
 // Start Server
 const PORT = process.env.PORT || 5000;

@@ -31,6 +31,11 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: ""
         },
+        google: {
+            // store refresh token and when connected
+            refreshToken: { type: String },
+            connectedAt: { type: Date }
+        },
     },
     { timestamps: true }
 );

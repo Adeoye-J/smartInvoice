@@ -162,3 +162,78 @@ exports.updateUserProfile = async (req, res) => {
         res.status(500).json({message: "Server error", error: error.message});
     }
 };
+
+// ----------------------------------------------------------
+
+
+// server/controllers/authController.js
+const asyncHandler = require('express-async-handler');
+// const User = require('../models/User');
+const { createOAuth2Client } = require('../utils/googleClient');
+// const jwt = require('jsonwebtoken');
+
+/**
+ * GET /api/auth/google/url
+ * returns the Google OAuth URL the frontend should open
+ */
+exports.getGoogleAuthUrl = asyncHandler(async (req, res) => {
+  const oauth2Client = createOAuth2Client();
+  // we request gmail.send scope
+  const scopes = ['https://www.googleapis.com/auth/gmail.send'];
+
+  const url = oauth2Client.generateAuthUrl({
+    access_type: 'offline',  // gets a refresh token
+    scope: scopes,
+    prompt: 'consent' // force consent so refresh_token is returned first time
+  });
+
+  res.json({ url });
+});
+
+/**
+ * GET /api/auth/google/callback?code=...
+ * Exchange code for tokens, get user email, save refresh token for that user.
+ * In a real app you'd authenticate the current user (session or JWT) and attach the refresh token to them.
+ * For demo, this example uses a query param ?userId=... to link the refresh token to a user in DB.
+ */
+exports.handleGoogleCallback = asyncHandler(async (req, res) => {
+  const { code, state, userId } = req.query; // frontend can include state or userId
+  if (!code) return res.status(400).send('Missing code');
+
+  const oauth2Client = createOAuth2Client();
+  const { tokens } = await oauth2Client.getToken(code);
+  // tokens contains access_token, refresh_token (refresh_token only on first consent), expiry_date, etc.
+  const refreshToken = tokens.refresh_token;
+
+  // Use the access token to get user profile (email)
+  oauth2Client.setCredentials(tokens);
+  const oauth2 = google.oauth2({ auth: oauth2Client, version: 'v2' });
+  const userInfo = await oauth2.userinfo.get();
+  const email = userInfo.data.email;
+  const name = userInfo.data.name;
+
+  // Find or create user by email, then save refresh token
+  let user = await User.findOne({ email });
+  if (!user) {
+    // If you want to allow signup on connect:
+    user = await User.create({ email, name });
+  }
+
+  if (refreshToken) {
+    user.google.refreshToken = refreshToken;
+    user.google.connectedAt = new Date();
+    await user.save();
+  } else {
+    // On subsequent consents Google may not return refresh_token. If user already has it stored, we're fine.
+    // If not, instruct user to use "prompt=consent" or disconnect/reconnect.
+    console.warn('No refresh token returned. Ensure prompt=consent on first connect.');
+  }
+
+  // This route is called by Google redirect - return a friendly page or redirect user back to app.
+  // If your app uses JWT sessions, you could link the current logged-in user by cookie or state param.
+  res.send(`<html><body>
+    <h3>Google account connected for ${email}</h3>
+    <p>You can close this window and return to the app.</p>
+  </body></html>`);
+});
+

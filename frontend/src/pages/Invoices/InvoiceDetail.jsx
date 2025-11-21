@@ -48,16 +48,48 @@ const InvoiceDetail = () => {
         }
     }
 
-    const handlePrint = () => {
-        if (printRef.current) {
-            const printContents = printRef.current.innerHTML;
-            const originalContents = document.body.innerHTML;
-            document.body.innerHTML = printContents;
-            window.print();
-            document.body.innerHTML = originalContents;
-            window.location.reload();
+    // const handlePrint = () => {
+    //     // if (invoiceRef.current) {
+    //     //     const printContents = invoiceRef.current.innerHTML;
+    //     //     const originalContents = document.body.innerHTML;
+    //     //     document.body.innerHTML = printContents;
+    //         window.print();
+    //     //     document.body.innerHTML = originalContents;
+    //     //     window.location.reload();
+    //     // }
+    // }
+
+    const handlePrint = async () => {
+        try {
+            setIsLoading(true); // optional: show spinner while PDF builds
+            // call backend route that returns PDF
+            const res = await axiosInstance.get(API_PATHS.INVOICE.GENERATE_PDF(id), { responseType: 'blob' });
+            // create blob and download
+            const blob = new Blob([res.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+
+            // Option A: open in new tab to let user print from browser
+            // window.open(url, '_blank');
+
+            // Option B: immediately download:
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `invoice-${invoice.invoiceNumber || id}.pdf`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+            // Cleanup
+            setTimeout(() => window.URL.revokeObjectURL(url), 100);
+            
+            toast.success('PDF generated successfully!');
+
+        } catch (err) {
+            console.error('Failed to generate PDF on server', err);
+            toast.error('Failed to generate PDF on server.');
+        } finally {
+            setIsLoading(false);
         }
-    }
+    };
 
     if (isLoading) {
         return (
@@ -96,41 +128,11 @@ const InvoiceDetail = () => {
                 isOpen={isReminderModalOpen}
                 onClose={() => setIsReminderModalOpen(false)}
             /> */}
-
-            {/* <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-sm" ref={printRef}>
-                <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-2xl font-bold text-gray-900">Invoice Details</h1>
-                    <div className="space-x-3">
-                        <Button 
-                            variant="secondary" 
-                            size="medium"
-                            onClick={() => setIsReminderModalOpen(true)}
-                            icon={Mail}
-                        >
-                            Send Reminder
-                        </Button>
-                        <Button
-                            variant="primary"
-                            size="medium"
-                            onClick={() => setIsEditMode(true)}
-                            icon={Edit}
-                        >
-                            Edit Invoice
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="medium"
-                            onClick={handlePrint}
-                            icon={Printer}
-                        >
-                            Print Invoice
-                        </Button>
-                    </div>
-                </div>
-                <div>
-                    <pre>{JSON.stringify(invoice, null, 2)}</pre>
-                </div>
-            </div> */}
+            <ReminderModal
+                isOpen={isReminderModalOpen}
+                onClose={() => setIsReminderModalOpen(false)}
+                invoice={invoice}
+            />
 
             <div className="flex flex-col md:flex-row items-start sm:items-center justify-between mb-6 print:hidden">
                 <h1 className="text-2xl font-semibold text-slate-900 mb-4 sm:mb-0">
@@ -205,7 +207,7 @@ const InvoiceDetail = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 justify-between gap-8 mt-8 mb-12">
+                    <div className="grid grid-cols-1 sm:grid-cols-4 justify-between gap-8 mt-8 mb-12">
                         <div>
                             <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Invoice Date</h3>
                             <p className="font-medium text-slate-600">{new Date(invoice.invoiceDate).toLocaleDateString()}</p>
@@ -217,6 +219,10 @@ const InvoiceDetail = () => {
                         <div className="sm:text-right">
                             <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Payment Terms</h3>
                             <p className="font-medium text-slate-600">{invoice.paymentTerms}</p>
+                        </div>
+                        <div className="sm:text-right">
+                            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Template Style</h3>
+                            <p className="font-medium text-slate-600">{invoice.templateId}</p>
                         </div>
                     </div>
 
@@ -272,6 +278,39 @@ const InvoiceDetail = () => {
                     }
                 </div>
             </div>
+
+            <style>
+                {`
+                    #page {
+                        padding: 10px;
+                    }
+
+                    @media print {
+                        body * {
+                            visibility: hidden;
+                        }
+
+                        #invoice-content-wrapper, #invoice-content-wrapper * {
+                            visibility: visible;
+                        }
+
+                        #invoice-content-wrapper {
+                            position: absolute;
+                            left: 0;
+                            top: 0;
+                            right: 0;
+                            width: 100%;
+                        }
+
+                        #invoice-preview {
+                            box-shadow: none;
+                            border: none;
+                            border-radius: 0;
+                            padding: 0;
+                        }
+                    }
+                `}
+            </style>
         </>
     )
 }

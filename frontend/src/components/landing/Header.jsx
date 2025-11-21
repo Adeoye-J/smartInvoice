@@ -55,8 +55,8 @@ const Header = () => {
                     </span>
                 </div>
                 <div className="hidden lg:flex lg:items-center lg:space-x-8">
-                    <a href="#features" className='text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-black after:transition-all after:duration-300 hover:after:w-full'>
-                        Features
+                    <a href="#how-it-works" className='text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-black after:transition-all after:duration-300 hover:after:w-full'>
+                        How It Works
                     </a>
                     <a href="#testimonials" className='text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-black after:transition-all after:duration-300 hover:after:w-full'>
                         Testimonials
@@ -111,9 +111,10 @@ const Header = () => {
         {menuOpen && (
             <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg">
                 <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <a href="#features" className='block px-4 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium transition-colors duration-200'>Features</a>
+                    <a href="#how-it-works" className='block px-4 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium transition-colors duration-200'>How It Works</a>
                     <a href="#testimonials" className='block px-4 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium transition-colors duration-200'>Testimonials</a>
                     <a href="#faq" className='block px-4 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium transition-colors duration-200'>FAQ</a>
+                    <a href="#pricing" className='block px-4 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium transition-colors duration-200'>Pricing</a>
 
                     <div className="border-t border-gray-200 my-2"></div>
 
