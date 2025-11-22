@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema(
             refreshToken: { type: String },
             connectedAt: { type: Date }
         },
+        logo: {
+            type: String,
+            default: ""
+        },
     },
     { timestamps: true }
 );

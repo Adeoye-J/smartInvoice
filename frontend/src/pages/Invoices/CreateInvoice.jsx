@@ -28,6 +28,7 @@ const CreateInvoice = ({existingInvoice, onSave}) => {
                 email: user?.email || "",
                 address: user?.address || "",
                 phone: user?.phone || "",
+                logo: user?.logo || "",
             },
             billTo: { clientName: "", email: "", address: "", phone: "" },
             items: [{name: "", quantity: 1, unitPrice: 0, taxPercent: 0}],
@@ -198,7 +199,7 @@ const CreateInvoice = ({existingInvoice, onSave}) => {
                         name={"templateId"}
                         value={formData.templateId}
                         onChange={handleInputChange}
-                        options={["Classic", "Modern", "Minimal"]}
+                        options={['Classic', 'Modern', 'Minimal', 'Creative', 'Elegant']}
                     />
                     {/* <div className="bg-white p-6 rounded-lg shadow-sm shadow-gray-100 border border-slate-200 space-y-4">
                     </div> */}

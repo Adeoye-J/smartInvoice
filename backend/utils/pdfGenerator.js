@@ -3,8 +3,15 @@ const ejs = require('ejs');
 const puppeteer = require('puppeteer');
 
 async function generatePdfBufferFromInvoice(invoice) {
-  const templatePath = path.join(__dirname, '..', 'templates', 'invoiceTemplate.ejs');
-  const html = await ejs.renderFile(templatePath, { invoice });
+//   const templatePath = path.join(__dirname, '..', 'templates', 'invoiceTemplate.ejs');
+//   const templatePath = path.join(__dirname, '..', 'templates', 'classic.ejs');
+    const templatePath = path.join(__dirname, '..', 'templates', `${(invoice.templateId).toLowerCase()}.ejs`);
+//   const html = await ejs.renderFile(templatePath, { invoice });
+  // In generatePdfBufferFromInvoice function
+    const html = await ejs.renderFile(templatePath, { 
+        invoice,
+        businessLogo: invoice.billFrom.logo || null // Pass logo
+    });
 
   const browser = await puppeteer.launch({
     args: ['--no-sandbox', '--disable-setuid-sandbox']

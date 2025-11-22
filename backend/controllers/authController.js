@@ -44,33 +44,25 @@ exports.registerUser = async (req, res) => {
     }
 };
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
-// exports.loginUser = async (req, res) => {
-//     const {email, password} = req.body;
+// Upload logo
+exports.uploadLogo = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
 
-//     try {
-//         const user = await User.findOne({email}).select("+password");
+        const user = await User.findById(req.user.id);
+        user.logo = req.file.path; // Cloudinary URL
+        await user.save();
 
-//         if (user && (await user.matchPassword(password))) {
-//             res.json({
-//                 _id: user._id,
-//                 name: user.name,
-//                 email: user.email,
-//                 token: generateToken(user._id),
-
-//                 businessName: user.businessName || "",
-//                 address: user.address || "",
-//                 phone: user.phone || "",
-//             });
-//         } else {
-//             res.status(401).json({message: "Invalid credentials."})
-//         }
-//     } catch (error) {
-//         res.status(500).json({message: "Server error", error: error.message});
-//     }
-// }
+        res.json({
+            message: "Logo uploaded successfully",
+            logo: user.logo
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Upload failed", error: error.message });
+    }
+};
 
 // LOGIN (fixed .select and explicit status handling)
 exports.loginUser = async (req, res) => {
@@ -95,15 +87,27 @@ exports.loginUser = async (req, res) => {
     }
 
     // success: return user info + token
+    // return res.status(200).json({
+    //   _id: user._id,
+    //   name: user.name,
+    //   email: user.email,
+    //   token: generateToken(user._id),
+    //   businessName: user.businessName || "",
+    //   address: user.address || "",
+    //   phone: user.phone || "",
+    // });
+
     return res.status(200).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      token: generateToken(user._id),
-      businessName: user.businessName || "",
-      address: user.address || "",
-      phone: user.phone || "",
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        token: generateToken(user._id),
+        businessName: user.businessName || "",
+        address: user.address || "",
+        phone: user.phone || "",
+        logo: user.logo || ""
     });
+
   } catch (error) {
     console.error("loginUser error:", error);
     return res.status(500).json({ message: "Server error" });
@@ -121,11 +125,12 @@ exports.getMe = async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
-            
             businessName: user.businessName || "",
             address: user.address || "",
             phone: user.phone || "",
+            logo: user.logo || ""
         });
+
     } catch (error) {
         res.status(500).json({message: "Server error", error: error.message});
     }

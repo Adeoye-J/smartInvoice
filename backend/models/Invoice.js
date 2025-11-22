@@ -46,6 +46,7 @@ const invoiceSchema = new mongoose.Schema(
             email: String,
             address: String,
             phone: String,
+            logo: String,
         },
         billTo: {
             clientName: String,
@@ -69,7 +70,7 @@ const invoiceSchema = new mongoose.Schema(
         templateId: { 
             type: String, 
             default: 'Classic',
-            enum: ['Classic', 'Modern', 'Minimal'] 
+            enum: ['Classic', 'Modern', 'Minimal', 'Creative', 'Elegant'] 
         },
         subTotal: Number,
         taxTotal: Number,

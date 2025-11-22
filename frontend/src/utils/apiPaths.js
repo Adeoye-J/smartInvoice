@@ -3,6 +3,7 @@ export const BASE_URL = "http://localhost:8000";
 export const API_PATHS = {
     AUTH: {
         REGISTER: "/api/auth/register", // SignUp
+        UPLOAD_LOGO: "/api/auth/upload-logo", // Upload business logo
         LOGIN: "/api/auth/login", // Authenticate user & return JWT token
         GET_PROFILE: "/api/auth/me", // Get logged-in user details
         UPDATE_PROFILE: "/api/auth/me", // Update profile details (PUT)

@@ -17,6 +17,8 @@ const ProfilePage = () => {
         phone: '',
         address: '',
     });
+    const [logoPreview, setLogoPreview] = useState(null);
+    const [logoFile, setLogoFile] = useState(null);
 
     useEffect(() => {
         if (user) {
@@ -28,6 +30,42 @@ const ProfilePage = () => {
             });
         }
     }, [user]);
+
+    useEffect(() => {
+        if (user?.logo) {
+            setLogoPreview(user.logo);
+        }
+    }, [user]);
+
+    // Handle logo selection
+    const handleLogoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setLogoFile(file);
+            setLogoPreview(URL.createObjectURL(file));
+        }
+    };
+
+    // Upload logo function
+    const handleLogoUpload = async () => {
+        if (!logoFile) return;
+        
+        const formData = new FormData();
+        formData.append('logo', logoFile);
+        
+        try {
+            const response = await axiosInstance.post(
+                API_PATHS.AUTH.UPLOAD_LOGO, 
+                formData,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
+            );
+            updateUser({ ...user, logo: response.data.logo });
+            toast.success("Logo uploaded successfully");
+        } catch (error) {
+            toast.error("Logo upload failed");
+            console.error(error);
+        }
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -87,6 +125,47 @@ const ProfilePage = () => {
                         icon={User}
                         placeholder="Enter Your Full Name"
                     />
+
+                    <div className="pt-6 border-t border-slate-200 space-y-4">
+                        <h4 className="text-lg font-medium text-slate-900">Business Logo</h4>
+                        
+                        <div className="flex items-center gap-6">
+                            {/* Logo Preview */}
+                            <div className="w-24 h-24 border-2 border-slate-200 rounded-lg overflow-hidden bg-slate-50 flex items-center justify-center">
+                                {logoPreview ? (
+                                    <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
+                                ) : (
+                                    <Building className="w-10 h-10 text-slate-400" />
+                                )}
+                            </div>
+                            
+                            {/* Upload Button */}
+                            <div>
+                                <input
+                                    type="file"
+                                    id="logo-upload"
+                                    accept="image/*"
+                                    onChange={handleLogoChange}
+                                    className="hidden"
+                                />
+                                <label
+                                    htmlFor="logo-upload"
+                                    className="cursor-pointer inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50"
+                                >
+                                    Choose Logo
+                                </label>
+                                
+                                {logoFile && (
+                                    <button
+                                        onClick={handleLogoUpload}
+                                        className="ml-3 px-4 py-2 bg-blue-900 text-white rounded-lg text-sm font-medium hover:bg-blue-800"
+                                    >
+                                        Upload
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
 
                     <div className="pt-6 border-t border-slate-200 space-y-4">
                         <h4 className="text-lg font-medium text-slate-900">Business Information</h4>
