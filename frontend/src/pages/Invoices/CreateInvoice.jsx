@@ -35,6 +35,7 @@ const CreateInvoice = ({existingInvoice, onSave}) => {
             notes: "",
             paymentTerms: "Net 15",
             templateId: "Classic",
+            brandColor: existingInvoice?.brandColor || "#1e40af"
         }
     );
     const [loading, setLoading] = useState(false)
@@ -153,7 +154,8 @@ const CreateInvoice = ({existingInvoice, onSave}) => {
                 toast.success("Invoice created successfully!");
                 navigate("/invoices");
             } catch (error) {
-                toast.error("Failed to create invoice.")
+                // toast.error("Failed to create invoice.")
+                toast.error(error.response?.data?.message || "Failed to create invoice.");
                 console.error(error);
             }
         }
@@ -171,7 +173,7 @@ const CreateInvoice = ({existingInvoice, onSave}) => {
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-sm shadow-gray-100 border border-slate-200">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <InputField 
                         label={"Invoice Number"}
                         name={"invoiceNumber"}
@@ -194,12 +196,19 @@ const CreateInvoice = ({existingInvoice, onSave}) => {
                         value={formData.dueDate}
                         onChange={handleInputChange}
                     />
+                    <InputField 
+                        label={"Brand Color"}
+                        type="color"
+                        name={"brandColor"}
+                        value={formData.brandColor}
+                        onChange={handleInputChange}
+                    />
                     <SelectField 
                         label={"Template Style"}
                         name={"templateId"}
                         value={formData.templateId}
                         onChange={handleInputChange}
-                        options={['Classic', 'Modern', 'Minimal', 'Creative', 'Elegant']}
+                        options={['Classic', 'Modern', 'Minimal', 'Elegant', 'Creative', 'Corporate']}
                     />
                     {/* <div className="bg-white p-6 rounded-lg shadow-sm shadow-gray-100 border border-slate-200 space-y-4">
                     </div> */}

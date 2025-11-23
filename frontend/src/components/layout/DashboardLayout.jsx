@@ -13,7 +13,7 @@ import {
     Menu,
     X
 } from "lucide-react"
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import ProfileDropdown from './ProfileDropdown'
 import { NAVIGATION_MENU } from '../../utils/data'
@@ -45,6 +45,7 @@ const DashboardLayout = ({children, activeMenu}) => {
 
     const {user, logout} = useAuth()
     const navigate = useNavigate()
+    const location = useLocation()
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [activeNavItem, setActiveNavItem] = useState(activeMenu || "dashboard")
@@ -170,7 +171,7 @@ const DashboardLayout = ({children, activeMenu}) => {
                                                 <NavigationItem 
                                                     key={item.id}
                                                     item={item}
-                                                    isActive={activeNavItem === item.id}
+                                                    isActive={location.pathname === `/${item.id}`}
                                                     onClick={handleNavigation}
                                                     isCollapsed={sidebarCollapsed}
                                                 />
@@ -217,7 +218,7 @@ const DashboardLayout = ({children, activeMenu}) => {
                             <NavigationItem 
                                 key={menu.id}
                                 item={menu}
-                                isActive={activeNavItem === menu.id}
+                                isActive={location.pathname === `/${menu.id}`}
                                 onClick={handleNavigation}
                                 isCollapsed={sidebarCollapsed}
                             />
@@ -277,7 +278,7 @@ const DashboardLayout = ({children, activeMenu}) => {
                             </p>
                         </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-3">
                         {/* Profile dropdown */}
                         <ProfileDropdown 

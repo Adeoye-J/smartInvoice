@@ -1,4 +1,4 @@
-<!doctype html>
+<!-- <!doctype html>
 <html>
 <head>
   <meta charset="utf-8" />
@@ -466,4 +466,432 @@
     <div class="footer-bar"></div>
   </div>
 </body>
-</html>
+</html> -->
+
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Invoice <%= invoice.invoiceNumber %></title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: 'Poppins', -apple-system, sans-serif;
+      color: #0f172a;
+      background: #f1f5f9;
+      padding: 20px;
+      font-size: 10px;
+    }
+    
+    .container { 
+      max-width: 750px; 
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    }
+    
+    .hero {
+      background: linear-gradient(135deg, <%= colors.primaryDarker %> 0%, <%= colors.primary %> 100%);
+      padding: 25px 30px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      right: -5%;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+    
+    .business-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo {
+      width: 50px;
+      height: 50px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 6px;
+      object-fit: contain;
+    }
+    
+    .business-info h1 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    
+    .business-info p {
+      font-size: 9px;
+      opacity: 0.95;
+      line-height: 1.4;
+    }
+    
+    .invoice-badge {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      padding: 15px 18px;
+      border-radius: 8px;
+      text-align: right;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    .badge-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      opacity: 0.9;
+      font-weight: 600;
+    }
+    
+    .badge-number {
+      font-size: 20px;
+      font-weight: 900;
+      margin: 4px 0;
+      letter-spacing: -0.5px;
+    }
+    
+    .badge-status {
+      display: inline-block;
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 12px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 6px;
+    }
+    
+    .main-body {
+      padding: 30px;
+    }
+    
+    .info-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .info-card {
+      background: <%= colors.primaryLighter %>;
+      padding: 12px;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      color: <%= colors.primaryDarker %>;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    
+    .card-value {
+      font-size: 11px;
+      color: <%= colors.primaryDarker %>;
+      font-weight: 700;
+    }
+    
+    .client-section {
+      background: #f1f5f9;
+      padding: 18px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #fbbf24;
+    }
+    
+    .client-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .client-icon {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, <%= colors.primary %> 0%, <%= colors.primaryLight %> 100%);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    
+    .client-title {
+      font-size: 9px;
+      text-transform: uppercase;
+      color: #64748b;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    .client-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    
+    .client-details {
+      font-size: 10px;
+      color: #475569;
+      line-height: 1.5;
+    }
+    
+    .items-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .items-table thead {
+      background: linear-gradient(135deg, <%= colors.primaryDarker %> 0%, <%= colors.primary %> 100%);
+      color: white;
+    }
+    
+    .items-table thead th {
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 9px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    .items-table thead th.right { text-align: right; }
+    .items-table thead th.center { text-align: center; }
+    
+    .items-table tbody tr {
+      background: white;
+    }
+    
+    .items-table tbody tr:nth-child(odd) {
+      background: #f8fafc;
+    }
+    
+    .items-table tbody td {
+      padding: 12px;
+      font-size: 10px;
+      color: #0f172a;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .items-table tbody td:first-child {
+      font-weight: 700;
+      color: <%= colors.primaryDark %>;
+    }
+    
+    .items-table tbody td.right { 
+      text-align: right; 
+      font-weight: 600;
+    }
+    
+    .items-table tbody td.center { 
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    .totals-area {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    
+    .totals-container {
+      width: 280px;
+      background: <%= colors.primaryPale %>;
+      padding: 18px;
+      border-radius: 8px;
+      border: 1px solid <%= colors.primaryLighter %>;
+    }
+    
+    .total-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 10px;
+      color: #475569;
+      font-weight: 600;
+    }
+    
+    .total-line span:last-child {
+      color: #0f172a;
+    }
+    
+    .total-grand {
+      border-top: 2px solid <%= colors.primary %>;
+      margin-top: 10px;
+      padding-top: 12px;
+      font-size: 18px;
+      font-weight: 900;
+      color: <%= colors.primaryDark %>;
+    }
+    
+    .notes-box {
+      margin-top: 25px;
+      padding: 15px;
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border-radius: 8px;
+      border-left: 4px solid #fbbf24;
+    }
+    
+    .notes-title {
+      font-size: 9px;
+      text-transform: uppercase;
+      color: #92400e;
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    
+    .notes-text {
+      font-size: 10px;
+      color: #78350f;
+      line-height: 1.6;
+    }
+    
+    .footer-bar {
+      height: 6px;
+      background: linear-gradient(90deg, <%= colors.primaryDarker %> 0%, <%= colors.primary %> 100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <div class="hero-content">
+        <div class="business-section">
+          <% if (businessLogo) { %>
+            <img src="<%= businessLogo %>" alt="Logo" class="logo" />
+          <% } %>
+          <div class="business-info">
+            <h1><%= invoice.billFrom?.businessName || 'Your Business' %></h1>
+            <p>
+              <%= invoice.billFrom?.address || '' %><br/>
+              <%= invoice.billFrom?.email || '' %>
+            </p>
+          </div>
+        </div>
+        
+        <div class="invoice-badge">
+          <div class="badge-label">Invoice</div>
+          <div class="badge-number">#<%= invoice.invoiceNumber %></div>
+          <div class="badge-status"><%= invoice.status %></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-body">
+      <div class="info-cards">
+        <div class="info-card">
+          <div class="card-label">Issued</div>
+          <div class="card-value"><%= new Date(invoice.invoiceDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></div>
+        </div>
+        
+        <div class="info-card">
+          <div class="card-label">Due Date</div>
+          <div class="card-value"><%= new Date(invoice.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></div>
+        </div>
+        
+        <div class="info-card">
+          <div class="card-label">Terms</div>
+          <div class="card-value"><%= invoice.paymentTerms || 'Net 30' %></div>
+        </div>
+      </div>
+
+      <div class="client-section">
+        <div class="client-header">
+          <div class="client-icon"><%= (invoice.billTo?.clientName || 'C').charAt(0).toUpperCase() %></div>
+          <div class="client-title">Billing Information</div>
+        </div>
+        <div class="client-name"><%= invoice.billTo?.clientName || '' %></div>
+        <div class="client-details">
+          <%= invoice.billTo?.address || '' %><br/>
+          <%= invoice.billTo?.email || '' %><br/>
+          <%= invoice.billTo?.phone || '' %>
+        </div>
+      </div>
+
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Item Description</th>
+            <th class="center">Qty</th>
+            <th class="right">Rate</th>
+            <th class="right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% (invoice.items || []).forEach(function(item){ %>
+            <tr>
+              <td><%= item.name %></td>
+              <td class="center"><%= item.quantity %></td>
+              <td class="right">$<%= Number(item.unitPrice || 0).toFixed(2) %></td>
+              <td class="right">$<%= Number(item.total || 0).toFixed(2) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <div class="totals-area">
+        <div class="totals-container">
+          <div class="total-line">
+            <span>Subtotal</span>
+            <span>$<%= Number(invoice.subTotal||0).toFixed(2) %></span>
+          </div>
+          <div class="total-line">
+            <span>Tax</span>
+            <span>$<%= Number(invoice.taxTotal||0).toFixed(2) %></span>
+          </div>
+          <div class="total-line total-grand">
+            <span>Total</span>
+            <span>$<%= Number(invoice.total||0).toFixed(2) %></span>
+          </div>
+        </div>
+      </div>
+
+      <% if (invoice.notes) { %>
+        <div class="notes-box">
+          <div class="notes-title">Additional Notes</div>
+          <div class="notes-text"><%= invoice.notes %></div>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="footer-bar"></div>
+  </div>
+</body>
+</html> 

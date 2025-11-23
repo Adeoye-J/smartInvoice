@@ -17,6 +17,7 @@ const InvoiceDetail = () => {
     const [error, setError] = useState("")
     const [isEditMode, setIsEditMode] = useState(false)
     const [isReminderModalOpen, setIsReminderModalOpen] = useState(false) 
+    const [statusChangeLoading, setStatusChangeLoading] = useState(null)
     const invoiceRef = useRef()
 
     useEffect(() => {
@@ -35,6 +36,41 @@ const InvoiceDetail = () => {
 
         fetchInvoice()
     }, [id])
+
+     const handleStatusChange = async (invoice) => {
+        setStatusChangeLoading(invoice._id);
+        try {
+            const newStatus = invoice.status === "Paid" ? "Unpaid" : "Paid";
+            const updatedInvoice = { ...invoice, status: newStatus };
+
+            // await axiosInstance.put(API_PATHS.INVOICE.UPDATE_INVOICE(invoice._id), updatedInvoice);
+
+            // setInvoices(prevInvoices =>
+            //     prevInvoices.map(inv =>
+            //         inv._id === invoice._id ? { ...inv, status: newStatus } : inv
+            //     )
+            // );
+
+            // The above code differs from the one below by using the response data to ensure all fields are updated as per backend logic
+            // The above code optimistically updates only the status field, which may lead to inconsistencies if other fields are modified by the backend.
+            // The below code ensures the frontend state matches the backend response entirely.
+
+            const response = await axiosInstance.put(API_PATHS.INVOICE.UPDATE_INVOICE(invoice._id), updatedInvoice);
+
+            // setInvoices(invoices.map(inv =>
+            //         inv._id === invoice._id ? response.data : inv
+            //     )
+            // );
+
+            setInvoice(inv => inv._id === invoice._id ? response.data : inv);
+            toast.success(`Invoice marked as ${newStatus}.`);
+        } catch (error) {
+            setError("Failed to update invoice status.");
+            console.error(error);
+        } finally {
+            setStatusChangeLoading(null);
+        }
+    };
 
     const handleUpdate = async (updatedData) => {
         try {
@@ -151,6 +187,14 @@ const InvoiceDetail = () => {
                             </Button>
                         )
                     }
+                    <Button
+                        size='small'
+                        variant='secondary'
+                        onClick={() => handleStatusChange(invoice)}
+                        isLoading={statusChangeLoading === invoice._id}
+                    >
+                        {invoice.status === "Paid" ? "Mark Unpaid" : "Mark Paid"}
+                    </Button>
                     <Button 
                         variant="secondary"
                         size="medium"

@@ -1,0 +1,834 @@
+<!-- <!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Invoice <%= invoice.invoiceNumber %></title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: 'Arial', 'Helvetica', sans-serif;
+      color: #1e293b;
+      background: white;
+      padding: 20px;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+    
+    .container { 
+      max-width: 750px; 
+      margin: 0 auto;
+      border: 2px solid <%= colors.primary %>;
+    }
+    
+    .header {
+      background: <%= colors.primary %>;
+      color: white;
+      padding: 20px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-wrapper {
+      width: 55px;
+      height: 55px;
+      background: white;
+      border-radius: 4px;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .logo {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    .company h1 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 3px;
+      letter-spacing: 0.5px;
+    }
+    
+    .company p {
+      font-size: 9px;
+      opacity: 0.95;
+      line-height: 1.4;
+    }
+    
+    .invoice-header {
+      text-align: right;
+    }
+    
+    .invoice-type {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .invoice-number {
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .content {
+      padding: 25px;
+    }
+    
+    .dates-bar {
+      display: flex;
+      background: <%= colors.primaryPale %>;
+      border: 1px solid <%= colors.primaryLighter %>;
+      margin-bottom: 25px;
+    }
+    
+    .date-box {
+      flex: 1;
+      padding: 12px 15px;
+      border-right: 1px solid <%= colors.primaryLighter %>;
+    }
+    
+    .date-box:last-child {
+      border-right: none;
+    }
+    
+    .date-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      color: #64748b;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    
+    .date-value {
+      font-size: 11px;
+      color: #0f172a;
+      font-weight: 700;
+    }
+    
+    .billing-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid <%= colors.primary %>;
+    }
+    
+    .billing-box h3 {
+      font-size: 9px;
+      text-transform: uppercase;
+      color: white;
+      background: <%= colors.primaryDark %>;
+      padding: 6px 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    
+    .billing-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+    
+    .billing-details {
+      font-size: 10px;
+      color: #475569;
+      line-height: 1.6;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      border: 1px solid <%= colors.primaryLighter %>;
+    }
+    
+    thead {
+      background: <%= colors.primaryDarker %>;
+      color: white;
+    }
+    
+    thead th {
+      padding: 10px;
+      text-align: left;
+      font-size: 9px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-right: 1px solid <%= colors.primaryLight %>;
+    }
+    
+    thead th:last-child {
+      border-right: none;
+    }
+    
+    thead th.right { text-align: right; }
+    thead th.center { text-align: center; }
+    
+    tbody tr {
+      border-bottom: 1px solid <%= colors.primaryLighter %>;
+    }
+    
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+    
+    tbody td {
+      padding: 10px;
+      font-size: 10px;
+      color: #0f172a;
+      border-right: 1px solid <%= colors.primaryLighter %>;
+    }
+    
+    tbody td:last-child {
+      border-right: none;
+    }
+    
+    tbody td:first-child {
+      font-weight: 600;
+    }
+    
+    tbody td.right { text-align: right; font-weight: 600; }
+    tbody td.center { text-align: center; }
+    
+    .summary {
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .summary-table {
+      width: 280px;
+      border: 2px solid <%= colors.primary %>;
+    }
+    
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      font-size: 10px;
+      border-bottom: 1px solid <%= colors.primaryLighter %>;
+    }
+    
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+    
+    .summary-row.subtotal {
+      background: <%= colors.primaryPale %>;
+      color: #475569;
+      font-weight: 600;
+    }
+    
+    .summary-row.tax {
+      background: <%= colors.primaryPale %>;
+      color: #475569;
+      font-weight: 600;
+    }
+    
+    .summary-row.total {
+      background: <%= colors.primary %>;
+      color: white;
+      font-size: 14px;
+      font-weight: 900;
+      padding: 12px;
+    }
+    
+    .notes {
+      margin-top: 25px;
+      border: 1px solid <%= colors.primaryLighter %>;
+      background: <%= colors.primaryPale %>;
+    }
+    
+    .notes-header {
+      background: <%= colors.primaryDark %>;
+      color: white;
+      padding: 6px 12px;
+      font-size: 9px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    .notes-body {
+      padding: 12px;
+      font-size: 10px;
+      color: #475569;
+      line-height: 1.6;
+    }
+    
+    .footer {
+      margin-top: 25px;
+      padding: 15px 25px;
+      background: <%= colors.primaryDarker %>;
+      color: white;
+      text-align: center;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-section">
+        <% if (businessLogo) { %>
+          <div class="logo-wrapper">
+            <img src="<%= businessLogo %>" alt="Logo" class="logo" />
+          </div>
+        <% } %>
+        <div class="company">
+          <h1><%= invoice.billFrom?.businessName || 'Your Business' %></h1>
+          <p>
+            <%= invoice.billFrom?.address || '' %><br/>
+            <%= invoice.billFrom?.email || '' %> | <%= invoice.billFrom?.phone || '' %>
+          </p>
+        </div>
+      </div>
+      
+      <div class="invoice-header">
+        <div class="invoice-type">Invoice</div>
+        <div class="invoice-number">#<%= invoice.invoiceNumber %></div>
+        <div class="status"><%= invoice.status %></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="dates-bar">
+        <div class="date-box">
+          <div class="date-label">Invoice Date</div>
+          <div class="date-value"><%= new Date(invoice.invoiceDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></div>
+        </div>
+        
+        <div class="date-box">
+          <div class="date-label">Due Date</div>
+          <div class="date-value"><%= new Date(invoice.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></div>
+        </div>
+        
+        <div class="date-box">
+          <div class="date-label">Payment Terms</div>
+          <div class="date-value"><%= invoice.paymentTerms || 'Net 30' %></div>
+        </div>
+      </div>
+
+      <div class="billing-section">
+        <div class="billing-box">
+          <h3>Bill To</h3>
+          <div class="billing-name"><%= invoice.billTo?.clientName || '' %></div>
+          <div class="billing-details">
+            <%= invoice.billTo?.address || '' %><br/>
+            <%= invoice.billTo?.email || '' %><br/>
+            <%= invoice.billTo?.phone || '' %>
+          </div>
+        </div>
+        
+        <div class="billing-box">
+          <h3>Bill From</h3>
+          <div class="billing-name"><%= invoice.billFrom?.businessName || '' %></div>
+          <div class="billing-details">
+            <%= invoice.billFrom?.address || '' %><br/>
+            <%= invoice.billFrom?.email || '' %><br/>
+            <%= invoice.billFrom?.phone || '' %>
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th class="center">Qty</th>
+            <th class="right">Unit Price</th>
+            <th class="right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% (invoice.items || []).forEach(function(item){ %>
+            <tr>
+              <td><%= item.name %></td>
+              <td class="center"><%= item.quantity %></td>
+              <td class="right">$<%= Number(item.unitPrice || 0).toFixed(2) %></td>
+              <td class="right">$<%= Number(item.total || 0).toFixed(2) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <div class="summary">
+        <div class="summary-table">
+          <div class="summary-row subtotal">
+            <span>Subtotal</span>
+            <span>$<%= Number(invoice.subTotal||0).toFixed(2) %></span>
+          </div>
+          <div class="summary-row tax">
+            <span>Tax</span>
+            <span>$<%= Number(invoice.taxTotal||0).toFixed(2) %></span>
+          </div>
+          <div class="summary-row total">
+            <span>Total Due</span>
+            <span>$<%= Number(invoice.total||0).toFixed(2) %></span>
+          </div>
+        </div>
+      </div>
+
+      <% if (invoice.notes) { %>
+        <div class="notes">
+          <div class="notes-header">Important Notes</div>
+          <div class="notes-body"><%= invoice.notes %></div>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="footer">
+      Thank You For Your Business
+    </div>
+  </div>
+</body>
+</html> -->
+
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Invoice <%= invoice.invoiceNumber %></title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: 'Arial', 'Helvetica', sans-serif;
+      color: #1e293b;
+      background: white;
+      padding: 20px;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+    
+    .container { 
+      max-width: 750px; 
+      margin: 0 auto;
+      border: 2px solid <%= colors.primary %>;
+    }
+    
+    .header {
+      background: <%= colors.primary %>;
+      color: white;
+      padding: 20px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-wrapper {
+      width: 55px;
+      height: 55px;
+      background: white;
+      border-radius: 4px;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .logo {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    .company h1 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 3px;
+      letter-spacing: 0.5px;
+    }
+    
+    .company p {
+      font-size: 9px;
+      opacity: 0.95;
+      line-height: 1.4;
+    }
+    
+    .invoice-header {
+      text-align: right;
+    }
+    
+    .invoice-type {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .invoice-number {
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .content {
+      padding: 25px;
+    }
+    
+    .dates-bar {
+      display: flex;
+      background: <%= colors.primaryPale %>;
+      border: 1px solid <%= colors.primaryLighter %>;
+      margin-bottom: 25px;
+    }
+    
+    .date-box {
+      flex: 1;
+      padding: 12px 15px;
+      border-right: 1px solid <%= colors.primaryLighter %>;
+    }
+    
+    .date-box:last-child {
+      border-right: none;
+    }
+    
+    .date-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      color: #64748b;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    
+    .date-value {
+      font-size: 11px;
+      color: #0f172a;
+      font-weight: 700;
+    }
+    
+    .billing-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid <%= colors.primary %>;
+    }
+    
+    .billing-box h3 {
+      font-size: 9px;
+      text-transform: uppercase;
+      color: white;
+      background: <%= colors.primaryDark %>;
+      padding: 6px 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    
+    .billing-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+    
+    .billing-details {
+      font-size: 10px;
+      color: #475569;
+      line-height: 1.6;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      border: 1px solid <%= colors.primaryLighter %>;
+    }
+    
+    thead {
+      background: <%= colors.primaryDarker %>;
+      color: white;
+    }
+    
+    thead th {
+      padding: 10px;
+      text-align: left;
+      font-size: 9px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-right: 1px solid <%= colors.primaryLight %>;
+    }
+    
+    thead th:last-child {
+      border-right: none;
+    }
+    
+    thead th.right { text-align: right; }
+    thead th.center { text-align: center; }
+    
+    tbody tr {
+      border-bottom: 1px solid <%= colors.primaryLighter %>;
+    }
+    
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+    
+    tbody td {
+      padding: 10px;
+      font-size: 10px;
+      color: #0f172a;
+      border-right: 1px solid <%= colors.primaryLighter %>;
+    }
+    
+    tbody td:last-child {
+      border-right: none;
+    }
+    
+    tbody td:first-child {
+      font-weight: 600;
+    }
+    
+    tbody td.right { text-align: right; font-weight: 600; }
+    tbody td.center { text-align: center; }
+    
+    .summary {
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .summary-table {
+      width: 280px;
+      border: 2px solid <%= colors.primary %>;
+    }
+    
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      font-size: 10px;
+      border-bottom: 1px solid <%= colors.primaryLighter %>;
+    }
+    
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+    
+    .summary-row.subtotal {
+      background: <%= colors.primaryPale %>;
+      color: #475569;
+      font-weight: 600;
+    }
+    
+    .summary-row.tax {
+      background: <%= colors.primaryPale %>;
+      color: #475569;
+      font-weight: 600;
+    }
+    
+    .summary-row.total {
+      background: <%= colors.primary %>;
+      color: white;
+      font-size: 14px;
+      font-weight: 900;
+      padding: 12px;
+    }
+    
+    .notes {
+      margin-top: 25px;
+      border: 1px solid <%= colors.primaryLighter %>;
+      background: <%= colors.primaryPale %>;
+    }
+    
+    .notes-header {
+      background: <%= colors.primaryDark %>;
+      color: white;
+      padding: 6px 12px;
+      font-size: 9px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    .notes-body {
+      padding: 12px;
+      font-size: 10px;
+      color: #475569;
+      line-height: 1.6;
+    }
+    
+    .footer {
+      margin-top: 25px;
+      padding: 15px 25px;
+      background: <%= colors.primaryDarker %>;
+      color: white;
+      text-align: center;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-section">
+        <% if (businessLogo) { %>
+          <div class="logo-wrapper">
+            <img src="<%= businessLogo %>" alt="Logo" class="logo" />
+          </div>
+        <% } %>
+        <div class="company">
+          <h1><%= invoice.billFrom?.businessName || 'Your Business' %></h1>
+          <p>
+            <%= invoice.billFrom?.address || '' %><br/>
+            <%= invoice.billFrom?.email || '' %> | <%= invoice.billFrom?.phone || '' %>
+          </p>
+        </div>
+      </div>
+      
+      <div class="invoice-header">
+        <div class="invoice-type">Invoice</div>
+        <div class="invoice-number">#<%= invoice.invoiceNumber %></div>
+        <div class="status"><%= invoice.status %></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="dates-bar">
+        <div class="date-box">
+          <div class="date-label">Invoice Date</div>
+          <div class="date-value"><%= new Date(invoice.invoiceDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></div>
+        </div>
+        
+        <div class="date-box">
+          <div class="date-label">Due Date</div>
+          <div class="date-value"><%= new Date(invoice.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></div>
+        </div>
+        
+        <div class="date-box">
+          <div class="date-label">Payment Terms</div>
+          <div class="date-value"><%= invoice.paymentTerms || 'Net 30' %></div>
+        </div>
+      </div>
+
+      <div class="billing-section">
+        <div class="billing-box">
+          <h3>Bill To</h3>
+          <div class="billing-name"><%= invoice.billTo?.clientName || '' %></div>
+          <div class="billing-details">
+            <%= invoice.billTo?.address || '' %><br/>
+            <%= invoice.billTo?.email || '' %><br/>
+            <%= invoice.billTo?.phone || '' %>
+          </div>
+        </div>
+        
+        <div class="billing-box">
+          <h3>Bill From</h3>
+          <div class="billing-name"><%= invoice.billFrom?.businessName || '' %></div>
+          <div class="billing-details">
+            <%= invoice.billFrom?.address || '' %><br/>
+            <%= invoice.billFrom?.email || '' %><br/>
+            <%= invoice.billFrom?.phone || '' %>
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th class="center">Qty</th>
+            <th class="right">Unit Price</th>
+            <th class="right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% (invoice.items || []).forEach(function(item){ %>
+            <tr>
+              <td><%= item.name %></td>
+              <td class="center"><%= item.quantity %></td>
+              <td class="right">$<%= Number(item.unitPrice || 0).toFixed(2) %></td>
+              <td class="right">$<%= Number(item.total || 0).toFixed(2) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <div class="summary">
+        <div class="summary-table">
+          <div class="summary-row subtotal">
+            <span>Subtotal</span>
+            <span>$<%= Number(invoice.subTotal||0).toFixed(2) %></span>
+          </div>
+          <div class="summary-row tax">
+            <span>Tax</span>
+            <span>$<%= Number(invoice.taxTotal||0).toFixed(2) %></span>
+          </div>
+          <div class="summary-row total">
+            <span>Total Due</span>
+            <span>$<%= Number(invoice.total||0).toFixed(2) %></span>
+          </div>
+        </div>
+      </div>
+
+      <% if (invoice.notes) { %>
+        <div class="notes">
+          <div class="notes-header">Important Notes</div>
+          <div class="notes-body"><%= invoice.notes %></div>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="footer">
+      Thank You For Your Business
+    </div>
+  </div>
+</body>
+</html>
