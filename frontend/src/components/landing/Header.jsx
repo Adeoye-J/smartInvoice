@@ -68,17 +68,6 @@ const Header = () => {
                 <div className="hidden lg:flex items-center space-x-4">
                     {isAuthenticated ? 
                         (
-                            // <ProfileDropdown 
-                            //     isOpen={profileDropdownOpen}
-                            //     onToggle={(e) => {
-                            //         e.stopPropagation();
-                            //         setProfileDropdownOpen(!profileDropdownOpen);
-                            //     }}
-                            //     avatar={user?.avatar || null}
-                            //     companyName={user?.name || ""}
-                            //     email={user?.email || ""}
-                            //     onLogout={logout}
-                            // />
                             // In ProfileDropdown component, pass logo
                             <ProfileDropdown 
                                 isOpen={profileDropdownOpen}
@@ -86,7 +75,7 @@ const Header = () => {
                                     e.stopPropagation();
                                     setProfileDropdownOpen(!profileDropdownOpen);
                                 }}
-                                avatar={user?.logo || null} // Changed from avatar
+                                avatar={user?.profilePicture || null} // Changed from avatar
                                 companyName={user?.name || ""}
                                 email={user?.email || ""}
                                 onLogout={logout}

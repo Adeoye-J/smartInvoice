@@ -144,7 +144,9 @@ export const NAVIGATION_MENU = [
         { id: "receipt", name: "All Receipts", icon: FileText},
         { id: "receipt/new", name: "Create Receipt", icon: Plus},
     ]},
-    // { id: "invoices", name: "Invoices", icon: FileText},
-    // { id: "invoices/new", name: "Create Invoice", icon: Plus},
     { id: "profile", name: "Profile", icon: Users},
+    { id: "settings", name: "Settings", icon: CloudUpload},
+    { id: "upgrade", name: "Upgrade Plan", icon: CreditCard},
+    { id: "security", name: "Security", icon: Lock},
+    // { id: "analytics", name: "Analytics", icon: BarChart3},
 ]

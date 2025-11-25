@@ -46,7 +46,6 @@ const invoiceSchema = new mongoose.Schema(
             email: String,
             address: String,
             phone: String,
-            logo: String,
         },
         billTo: {
             clientName: String,
@@ -72,15 +71,10 @@ const invoiceSchema = new mongoose.Schema(
             default: 'Classic',
             enum: ['Classic', 'Modern', 'Minimal', 'Elegant', 'Creative', 'Corporate'] 
         },
-        // templateId: { 
-        //     type: String, 
-        //     default: 'classic',
-        //     enum: ['classic', 'modern', 'minimal', 'elegant', 'creative', 'corporate'] 
+        // brandColor: {
+        //     type: String,
+        //     default: '#1e40af' // default blue
         // },
-        brandColor: {
-            type: String,
-            default: '#1e40af' // default blue
-        },
         subTotal: Number,
         taxTotal: Number,
         total: Number,

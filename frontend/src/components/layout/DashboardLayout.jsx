@@ -129,39 +129,30 @@ const DashboardLayout = ({children, activeMenu}) => {
                 </div>
 
                 {/* Navigation */}
-                <nav className="p-4 space-y-2">
+                <nav className="p-4 space-y-2 overflow-y-auto h-[calc(100vh-8rem)]">
                     {NAVIGATION_MENU.map((menu) => (
                         menu.items ? (
                             <div key={menu.id} className="space-y-1">
                                 {!sidebarCollapsed && (
-                                    // <div className='flex items-center justify-between'>
-                                        <button 
-                                            className={`w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900 }`}
-                                            // onClick={() => setInvoiceDropdownOpen(!invoiceDropdownOpen)}
-                                            // onClick={() => {
-                                            //     if (invoiceDropdownOpen === menu.id) {
-                                            //         setInvoiceDropdownOpen(null);
-                                            //     } else {
-                                            //         setInvoiceDropdownOpen(menu.id);
-                                            //     }
-                                            // }}
-                                            onClick={() => {
-                                                setDropdownsOpen((prev) => ({
-                                                    ...prev,
-                                                    [menu.id]: !prev[menu.id],
-                                                }));
-                                            }}
-                                        >
-                                            <div className="flex items-center">
-                                                <menu.icon
-                                                    className={`h-5 w-5 shrink-0 text-gray-500}`}
-                                                />
-                                                {!sidebarCollapsed && <span className="ml-4 truncate">{menu.id}</span> }
-                                            </div>
-                                            <div className="">
-                                                <ChevronDown className='h-4 w-4 text-gray-400' />
-                                            </div>
-                                        </button>
+                                    <button 
+                                        className={`w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900 }`}
+                                        onClick={() => {
+                                            setDropdownsOpen((prev) => ({
+                                                ...prev,
+                                                [menu.id]: !prev[menu.id],
+                                            }));
+                                        }}
+                                    >
+                                        <div className="flex items-center">
+                                            <menu.icon
+                                                className={`h-5 w-5 shrink-0 text-gray-500}`}
+                                            />
+                                            {!sidebarCollapsed && <span className="ml-4 truncate">{menu.id}</span> }
+                                        </div>
+                                        <div className="">
+                                            <ChevronDown className='h-4 w-4 text-gray-400' />
+                                        </div>
+                                    </button>
                                 )}
 
                                 {
@@ -179,40 +170,6 @@ const DashboardLayout = ({children, activeMenu}) => {
                                         </div>
                                     )
                                 }
-
-                                {/* {
-                                    (invoiceDropdownOpen === menu.id || sidebarCollapsed) && (
-                                        <div className={`pl-3 mt-1 space-y-1 ${sidebarCollapsed ? "hidden" : ""}`}>
-                                            {menu.items.map((item) => (
-                                                <NavigationItem 
-                                                    key={item.id}
-                                                    item={item}
-                                                    isActive={activeNavItem === item.id}
-                                                    onClick={handleNavigation}
-                                                    isCollapsed={sidebarCollapsed}
-                                                />
-                                            ))}
-                                        </div>
-                                    )
-                                } */}
-
-                                {/* {
-                                    invoiceDropdownOpen && !sidebarCollapsed && (
-                                        <div className="pl-3 mt-1 space-y-1">
-                                            {menu.items.map((item) => (
-                                                <NavigationItem 
-                                                    key={item.id}
-                                                    item={item}
-                                                    isActive={activeNavItem === item.id}
-                                                    onClick={handleNavigation}
-                                                    isCollapsed={sidebarCollapsed}
-                                                />
-                                            ))}
-                                        </div>
-                                    )
-                                } */}
-
-
                             </div>
                         ) : (   
                             <NavigationItem 
@@ -287,7 +244,7 @@ const DashboardLayout = ({children, activeMenu}) => {
                                 e.stopPropagation();
                                 setProfileDropdownOpen(!profileDropdownOpen);
                             }}
-                            avatar={user?.logo || ""}
+                            avatar={user?.profilePicture || ""}
                             companyName={user?.name || ""}
                             email={user?.email || ""}
                             onLogout={logout}

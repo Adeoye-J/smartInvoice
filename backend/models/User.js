@@ -36,9 +36,17 @@ const userSchema = new mongoose.Schema(
             refreshToken: { type: String },
             connectedAt: { type: Date }
         },
-        logo: {
+        businessLogo: {
             type: String,
             default: ""
+        },
+        profilePicture: {
+            type: String,
+            default: ""
+        },
+        brandColor: {
+            type: String,
+            default: '#1e40af' // default blue
         },
     },
     { timestamps: true }

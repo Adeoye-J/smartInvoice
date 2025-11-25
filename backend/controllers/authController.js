@@ -44,27 +44,63 @@ exports.registerUser = async (req, res) => {
     }
 };
 
-// Upload logo
-exports.uploadLogo = async (req, res) => {
+// Upload profile picture
+exports.uploadProfilePicture = async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: "No file uploaded" });
         }
 
         const user = await User.findById(req.user.id);
-        user.logo = req.file.path; // Cloudinary URL
+
+        // Optional: Delete old image from Cloudinary
+        if (user.profilePicture) {
+            const publicId = user.profilePicture.split('/').slice(-2).join('/').split('.')[0];
+            await cloudinary.uploader.destroy(publicId);
+        }
+
+        user.profilePicture = req.file.path;
         await user.save();
 
         res.json({
-            message: "Logo uploaded successfully",
-            logo: user.logo
+            message: "Profile picture uploaded successfully",
+            profilePicture: user.profilePicture
         });
     } catch (error) {
         res.status(500).json({ message: "Upload failed", error: error.message });
     }
 };
 
-// LOGIN (fixed .select and explicit status handling)
+// Upload business logo
+exports.uploadBusinessLogo = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const user = await User.findById(req.user.id);
+
+        // Optional: Delete old image from Cloudinary
+        if (user.businessLogo) {
+            const publicId = user.businessLogo.split('/').slice(-2).join('/').split('.')[0];
+            await cloudinary.uploader.destroy(publicId);
+        }
+
+        user.businessLogo = req.file.path;
+        await user.save();
+
+        res.json({
+            message: "Business logo uploaded successfully",
+            businessLogo: user.businessLogo
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Upload failed", error: error.message });
+    }
+};
+
+// @desc    Authenticate a user
+// @route   POST /api/auth/login
+// @access  Public
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -86,17 +122,6 @@ exports.loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials." });
     }
 
-    // success: return user info + token
-    // return res.status(200).json({
-    //   _id: user._id,
-    //   name: user.name,
-    //   email: user.email,
-    //   token: generateToken(user._id),
-    //   businessName: user.businessName || "",
-    //   address: user.address || "",
-    //   phone: user.phone || "",
-    // });
-
     return res.status(200).json({
         _id: user._id,
         name: user.name,
@@ -105,7 +130,8 @@ exports.loginUser = async (req, res) => {
         businessName: user.businessName || "",
         address: user.address || "",
         phone: user.phone || "",
-        logo: user.logo || ""
+        profilePicture: user.profilePicture || "",  // ADD
+        businessLogo: user.businessLogo || ""       // ADD
     });
 
   } catch (error) {

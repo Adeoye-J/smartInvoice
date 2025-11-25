@@ -3,11 +3,12 @@ export const BASE_URL = "http://localhost:8000";
 export const API_PATHS = {
     AUTH: {
         REGISTER: "/api/auth/register", // SignUp
-        UPLOAD_LOGO: "/api/auth/upload-logo", // Upload business logo
         LOGIN: "/api/auth/login", // Authenticate user & return JWT token
         GET_PROFILE: "/api/auth/me", // Get logged-in user details
         UPDATE_PROFILE: "/api/auth/me", // Update profile details (PUT)
-        CONNECT_GMAIL : "/api/auth/google/url", // Get Google OAuth URL
+        CONNECT_GMAIL : "/api/auth/google/url", // Get Google OAuth URL,
+        UPLOAD_PROFILE_PICTURE: "/api/auth/upload-profile-picture", // Upload profile picture
+        UPLOAD_BUSINESS_LOGO: "/api/auth/upload-business-logo", // Upload business logo
     },
 
     INVOICE: {
@@ -19,10 +20,4 @@ export const API_PATHS = {
         SEND_INVOICE_EMAIL: (id) => `/api/invoices/${id}/send-email`,
         GENERATE_PDF: (id) => `/api/invoices/${id}/generate-pdf`,
     },
-
-    // AI: {
-    //     PARSE_INVOICE_TEXT: `/api/ai/parse-text`,
-    //     GENERATE_REMINDER: `/api/ai/generate-reminder`,
-    //     GET_DASHBOARD_SUMMARY: `/api/ai/dashboard-summary`
-    // }
 }
