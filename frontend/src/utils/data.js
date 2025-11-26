@@ -73,21 +73,7 @@ export const testimonials = [
     author: "Aisha Mohammed",
     title: "Event Planner",
     avatar: "https://randomuser.me/api/portraits/women/54.jpg",
-  },
-//   {
-//     quote:
-//       "The upgrade plans are affordable, and the security gives me peace of mind. I recommend SmartInvoice+ to every small business owner who values simplicity and reliability.",
-//     author: "Emeka Lawson",
-//     title: "Business Consultant",
-//     avatar: "https://randomuser.me/api/portraits/men/36.jpg",
-//   },
-//   {
-//     quote:
-//       "It’s fast, intuitive, and professional. I can create and send receipts right from my phone — perfect for on-the-go entrepreneurs like me.",
-//     author: "Sarah Nwosu",
-//     title: "Online Store Owner",
-//     avatar: "https://randomuser.me/api/portraits/women/60.jpg",
-//   },
+  }
 ];
 
 // faqData.js
@@ -141,12 +127,12 @@ export const NAVIGATION_MENU = [
         { id: "invoices/new", name: "Create Invoice", icon: Plus},
     ]},
     {id: "Receipts", icon: FileText, items: [
-        { id: "receipt", name: "All Receipts", icon: FileText},
-        { id: "receipt/new", name: "Create Receipt", icon: Plus},
+        { id: "receipts", name: "All Receipts", icon: FileText},
+        // { id: "receipts/new", name: "Create Receipt", icon: Plus},
     ]},
     { id: "profile", name: "Profile", icon: Users},
     { id: "settings", name: "Settings", icon: CloudUpload},
-    { id: "upgrade", name: "Upgrade Plan", icon: CreditCard},
+    { id: "upgrade-plan", name: "Upgrade Plan", icon: CreditCard},
     { id: "security", name: "Security", icon: Lock},
     // { id: "analytics", name: "Analytics", icon: BarChart3},
 ]

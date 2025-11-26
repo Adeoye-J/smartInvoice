@@ -16,6 +16,7 @@ const Button = ({
         primary: "bg-blue-900 text-white hover:bg-blue-800",
         secondary: "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200",
         ghost: "bg-transparent text-slate-700 hover:bg-slate-100",
+        success: "bg-green-600 hover:bg-green-700 text-white",
         // danger: "bg-red-600 text-white hover:bg-red-700",
     };
 

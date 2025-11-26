@@ -11,6 +11,11 @@ import InvoiceDetail from './pages/Invoices/InvoiceDetail'
 import ProfilePage from './pages/Profile/ProfilePage'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
+import Security from './pages/Profile/Security'
+import Settings from './pages/Profile/Settings'
+import UpgradePlan from './pages/Profile/UpgradePlan'
+import AllReceipts from './pages/Receipts/AllReceipts'
+import ReceiptDetail from './pages/Receipts/ReceiptDetail'
 
 const App = () => {
   return (
@@ -31,7 +36,13 @@ const App = () => {
                     <Route path='invoices' element={<AllInvoices />} />
                     <Route path='invoices/new' element={<CreateInvoice />} />
                     <Route path='invoices/:id' element={<InvoiceDetail />} />
+                    <Route path='receipts' element={<AllReceipts />} />
+                    {/* <Route path='receipt/new' element={<CreateInvoice />} /> */}
+                    <Route path='receipts/:id' element={<ReceiptDetail />} />
                     <Route path='profile' element={<ProfilePage />} />
+                    <Route path='settings' element={<Settings />} />
+                    <Route path='security' element={<Security />} />
+                    <Route path='upgrade-plan' element={<UpgradePlan />} />
                 </Route>
 
             </Routes>

@@ -2,21 +2,24 @@ import React, {useState, useEffect, useRef} from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axiosInstance from '../../utils/axiosInstance'
 import { API_PATHS } from '../../utils/apiPaths'
-import { Loader2, Edit, Printer, AlertCircle, Mail } from 'lucide-react'
+import { Loader2, Edit, Printer, AlertCircle, Mail, PlusCircleIcon, ReceiptIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
 import CreateInvoice from './CreateInvoice'
 import Button from '../../components/ui/Button'
 import ReminderModal from '../../components/invoices/ReminderModal'
+import GenerateReceiptModal from '../../components/receipts/GenerateReceiptModal'
 
 const InvoiceDetail = () => {
 
     const {id} = useParams()
     const navigate = useNavigate()
     const [invoice, setInvoice] = useState(null)
+    const [receipt, setReceipt] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState("")
     const [isEditMode, setIsEditMode] = useState(false)
     const [isReminderModalOpen, setIsReminderModalOpen] = useState(false) 
+    const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false)
     const [statusChangeLoading, setStatusChangeLoading] = useState(null)
     const invoiceRef = useRef()
 
@@ -26,6 +29,17 @@ const InvoiceDetail = () => {
             try {
                 const response = await axiosInstance.get(API_PATHS.INVOICE.GET_INVOICE_BY_ID(id))
                 setInvoice(response.data)
+
+                // Check if receipt exists for this invoice
+                if (response.data.status === 'Paid') {
+                    try {
+                        const receiptResponse = await axiosInstance.get(API_PATHS.RECEIPT.GET_BY_INVOICE(id))
+                        setReceipt(receiptResponse.data)
+                    } catch (err) {
+                        // Receipt doesn't exist yet
+                        setReceipt(null)
+                    }
+                }
             } catch (error) {
                 toast.error("Failed to fetch invoice details.")
                 setError("Failed to fetch invoice details.")
@@ -43,24 +57,7 @@ const InvoiceDetail = () => {
             const newStatus = invoice.status === "Paid" ? "Unpaid" : "Paid";
             const updatedInvoice = { ...invoice, status: newStatus };
 
-            // await axiosInstance.put(API_PATHS.INVOICE.UPDATE_INVOICE(invoice._id), updatedInvoice);
-
-            // setInvoices(prevInvoices =>
-            //     prevInvoices.map(inv =>
-            //         inv._id === invoice._id ? { ...inv, status: newStatus } : inv
-            //     )
-            // );
-
-            // The above code differs from the one below by using the response data to ensure all fields are updated as per backend logic
-            // The above code optimistically updates only the status field, which may lead to inconsistencies if other fields are modified by the backend.
-            // The below code ensures the frontend state matches the backend response entirely.
-
             const response = await axiosInstance.put(API_PATHS.INVOICE.UPDATE_INVOICE(invoice._id), updatedInvoice);
-
-            // setInvoices(invoices.map(inv =>
-            //         inv._id === invoice._id ? response.data : inv
-            //     )
-            // );
 
             setInvoice(inv => inv._id === invoice._id ? response.data : inv);
             toast.success(`Invoice marked as ${newStatus}.`);
@@ -127,6 +124,41 @@ const InvoiceDetail = () => {
         }
     };
 
+    const handleReceiptSuccess = (newReceipt) => {
+        setReceipt(newReceipt);
+        toast.success('Receipt generated successfully!');
+    };
+
+    const handleViewReceipt = () => {
+        if (receipt) {
+            navigate(`/receipts/${receipt._id}`);
+        }
+    };
+
+    const handleDownloadReceipt = async () => {
+        if (!receipt) return;
+
+        try {
+            setIsLoading(true);
+            const res = await axiosInstance.get(API_PATHS.RECEIPT.GENERATE_PDF(receipt._id), { responseType: 'blob' });
+            const blob = new Blob([res.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `receipt-${receipt.receiptNumber}.pdf`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+            toast.success('Receipt PDF downloaded!');
+        } catch (err) {
+            console.error('Failed to download receipt', err);
+            toast.error('Failed to download receipt.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-96">
@@ -170,11 +202,51 @@ const InvoiceDetail = () => {
                 invoice={invoice}
             />
 
+            <GenerateReceiptModal
+                isOpen={isReceiptModalOpen}
+                onClose={() => setIsReceiptModalOpen(false)}
+                invoice={invoice}
+                onSuccess={handleReceiptSuccess}
+            />
+
             <div className="flex flex-col md:flex-row items-start sm:items-center justify-between mb-6 print:hidden">
                 <h1 className="text-2xl font-semibold text-slate-900 mb-4 sm:mb-0">
                     <span className='text-slate-500'>{invoice.invoiceNumber}</span>
                 </h1>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    {invoice.status === "Paid" && (
+                        <>
+                            {receipt ? (
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="success"
+                                        size="medium"
+                                        onClick={handleViewReceipt}
+                                        icon={ReceiptIcon}
+                                    >
+                                        View Receipt
+                                    </Button>
+                                    <Button
+                                        variant="secondary"
+                                        size="medium"
+                                        onClick={handleDownloadReceipt}
+                                        icon={Printer}
+                                    >
+                                        Download Receipt
+                                    </Button>
+                                </div>
+                            ) : (
+                                <Button
+                                    variant="primary"
+                                    size="medium"
+                                    onClick={() => setIsReceiptModalOpen(true)}
+                                    icon={PlusCircleIcon}
+                                >
+                                    Generate Receipt
+                                </Button>
+                            )}
+                        </>
+                    )}
                     {
                         invoice.status !== "Paid" && (
                             <Button

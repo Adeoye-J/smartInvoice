@@ -20,4 +20,15 @@ export const API_PATHS = {
         SEND_INVOICE_EMAIL: (id) => `/api/invoices/${id}/send-email`,
         GENERATE_PDF: (id) => `/api/invoices/${id}/generate-pdf`,
     },
+
+    RECEIPT: {
+        GENERATE: (invoiceId) => `/api/receipts/invoice/${invoiceId}/generate`,
+        GET_ALL: "/api/receipts",
+        GET_BY_ID: (id) => `/api/receipts/${id}`,
+        GET_BY_INVOICE: (invoiceId) => `/api/receipts/invoice/${invoiceId}`,
+        UPDATE: (id) => `/api/receipts/${id}`,
+        DELETE: (id) => `/api/receipts/${id}`,
+        GENERATE_PDF: (id) => `/api/receipts/${id}/generate-pdf`,
+        GET_STATS: "/api/receipts/stats/summary",
+    }
 }

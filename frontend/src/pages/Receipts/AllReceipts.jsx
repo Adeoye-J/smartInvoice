@@ -7,7 +7,7 @@
 // import Button from '../../components/ui/Button'
 // import Tooltip from '../../utils/Tooltip'
 
-// const AllInvoices = () => {
+// const AllReceipts = () => {
 
 //     const [invoices, setInvoices] = useState([])
 //     const [loading, setLoading] = useState(true)
@@ -273,22 +273,266 @@
 //     )
 // }
 
-// export default AllInvoices
+// export default AllReceipts
 
-// pages/invoices/AllInvoices.jsx
+// import React, { useEffect, useState, useMemo} from 'react'
+// import axiosInstance from '../../utils/axiosInstance'
+// import { API_PATHS } from '../../utils/apiPaths'
+// import { Loader2, Trash2, Edit, Search, FileText, Plus, AlertCircle, Sparkles, Mail } from 'lucide-react'
+// import moment from "moment"
+// import { useNavigate } from 'react-router-dom'
+// import Button from '../../components/ui/Button'
+// import Tooltip from '../../utils/Tooltip'
+
+// const AllReceipts = () => {
+
+//     return (
+//         <div className="space-y-6">
+//             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+//                 <div className="">
+//                     <h1 className="text-2xl font-semibold text-slate-900">All Receipts</h1>
+//                     <p className="text-sm text-slate-600 mt-1">Manage all your receipts in one place.</p>
+//                 </div>
+
+//                 <div className="flex items-center gap-2">
+//                     <Button onClick={() => navigate("/receipts/new")} icon={Plus}>
+//                         Create Receipt
+//                     </Button>
+//                 </div>
+//             </div>
+//         </div>
+//     )
+// }
+
+// export default AllReceipts
+
+
+
+// import React, { useState, useEffect } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import { Loader2, Receipt, Eye, Download, Trash2 } from 'lucide-react';
+// import axiosInstance from '../../utils/axiosInstance';
+// import { API_PATHS } from '../../utils/apiPaths';
+// import toast from 'react-hot-toast';
+// import Button from '../../components/ui/Button';
+
+// const AllReceipts = () => {
+//     const navigate = useNavigate();
+//     const [receipts, setReceipts] = useState([]);
+//     const [isLoading, setIsLoading] = useState(true);
+//     const [stats, setStats] = useState(null);
+
+//     useEffect(() => {
+//         fetchReceipts();
+//         fetchStats();
+//     }, []);
+
+//     const fetchReceipts = async () => {
+//         setIsLoading(true);
+//         try {
+//             const response = await axiosInstance.get(API_PATHS.RECEIPT.GET_ALL);
+//             setReceipts(response.data.receipts);
+//         } catch (error) {
+//             toast.error('Failed to fetch receipts');
+//             console.error(error);
+//         } finally {
+//             setIsLoading(false);
+//         }
+//     };
+
+//     const fetchStats = async () => {
+//         try {
+//             const response = await axiosInstance.get(API_PATHS.RECEIPT.GET_STATS);
+//             setStats(response.data.summary);
+//         } catch (error) {
+//             console.error('Failed to fetch stats:', error);
+//         }
+//     };
+
+//     const handleDownload = async (receiptId, receiptNumber) => {
+//         try {
+//             const res = await axiosInstance.get(API_PATHS.RECEIPT.GENERATE_PDF(receiptId), { 
+//                 responseType: 'blob' 
+//             });
+//             const blob = new Blob([res.data], { type: 'application/pdf' });
+//             const url = window.URL.createObjectURL(blob);
+//             const a = document.createElement('a');
+//             a.href = url;
+//             a.download = `receipt-${receiptNumber}.pdf`;
+//             a.click();
+//             window.URL.revokeObjectURL(url);
+//             toast.success('Receipt downloaded!');
+//         } catch (error) {
+//             toast.error('Failed to download receipt');
+//             console.error(error);
+//         }
+//     };
+
+//     const handleDelete = async (id) => {
+//         if (!window.confirm('Are you sure you want to delete this receipt?')) return;
+
+//         try {
+//             await axiosInstance.delete(API_PATHS.RECEIPT.DELETE(id));
+//             toast.success('Receipt deleted successfully');
+//             fetchReceipts();
+//             fetchStats();
+//         } catch (error) {
+//             toast.error('Failed to delete receipt');
+//             console.error(error);
+//         }
+//     };
+
+//     if (isLoading) {
+//         return (
+//             <div className="flex items-center justify-center h-96">
+//                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+//             </div>
+//         );
+//     }
+
+//     return (
+//         <div className="space-y-6">
+//             {/* Header */}
+//             <div className="flex justify-between items-center">
+//                 <h1 className="text-2xl font-bold text-slate-900">Receipts</h1>
+//             </div>
+
+//             {/* Stats Cards */}
+//             {stats && (
+//                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+//                     <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+//                         <div className="flex items-center justify-between">
+//                             <div>
+//                                 <p className="text-sm text-slate-500">Total Receipts</p>
+//                                 <p className="text-2xl font-bold text-slate-900">{stats.totalReceipts || 0}</p>
+//                             </div>
+//                             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+//                                 <Receipt className="w-6 h-6 text-blue-600" />
+//                             </div>
+//                         </div>
+//                     </div>
+
+//                     <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+//                         <div className="flex items-center justify-between">
+//                             <div>
+//                                 <p className="text-sm text-slate-500">Total Amount</p>
+//                                 <p className="text-2xl font-bold text-green-600">
+//                                     ${(stats.totalAmount || 0).toFixed(2)}
+//                                 </p>
+//                             </div>
+//                             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+//                                 <Receipt className="w-6 h-6 text-green-600" />
+//                             </div>
+//                         </div>
+//                     </div>
+
+//                     <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+//                         <div className="flex items-center justify-between">
+//                             <div>
+//                                 <p className="text-sm text-slate-500">Average Amount</p>
+//                                 <p className="text-2xl font-bold text-slate-900">
+//                                     ${(stats.avgAmount || 0).toFixed(2)}
+//                                 </p>
+//                             </div>
+//                             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+//                                 <Receipt className="w-6 h-6 text-purple-600" />
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>
+//             )}
+
+//             {/* Receipts Table */}
+//             <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+//                 <div className="overflow-x-auto">
+//                     <table className="w-full divide-y divide-slate-200">
+//                         <thead className="bg-slate-50">
+//                             <tr>
+//                                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Receipt #</th>
+//                                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Client</th>
+//                                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Date</th>
+//                                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Payment Method</th>
+//                                 <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Amount</th>
+//                                 <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Actions</th>
+//                             </tr>
+//                         </thead>
+//                         <tbody className="divide-y divide-slate-200">
+//                             {receipts.length === 0 ? (
+//                                 <tr>
+//                                     <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
+//                                         <Receipt className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+//                                         <p className="text-lg font-medium">No receipts found</p>
+//                                         <p className="text-sm mt-1">Receipts will appear here once generated</p>
+//                                     </td>
+//                                 </tr>
+//                             ) : (
+//                                 receipts.map((receipt) => (
+//                                     <tr key={receipt._id} className="hover:bg-slate-50">
+//                                         <td className="px-6 py-4 text-sm font-medium text-slate-900">
+//                                             {receipt.receiptNumber}
+//                                         </td>
+//                                         <td className="px-6 py-4 text-sm text-slate-600">
+//                                             {receipt.billTo?.clientName || 'N/A'}
+//                                         </td>
+//                                         <td className="px-6 py-4 text-sm text-slate-600">
+//                                             {new Date(receipt.receiptDate).toLocaleDateString()}
+//                                         </td>
+//                                         <td className="px-6 py-4 text-sm">
+//                                             <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
+//                                                 {receipt.paymentMethod}
+//                                             </span>
+//                                         </td>
+//                                         <td className="px-6 py-4 text-sm text-right font-semibold text-green-600">
+//                                             ${receipt.amountPaid.toFixed(2)}
+//                                         </td>
+//                                         <td className="px-6 py-4 text-right text-sm space-x-2">
+//                                             <button
+//                                                 onClick={() => navigate(`/receipts/${receipt._id}`)}
+//                                                 className="text-blue-600 hover:text-blue-800"
+//                                                 title="View"
+//                                             >
+//                                                 <Eye className="w-4 h-4 inline" />
+//                                             </button>
+//                                             <button
+//                                                 onClick={() => handleDownload(receipt._id, receipt.receiptNumber)}
+//                                                 className="text-green-600 hover:text-green-800"
+//                                                 title="Download"
+//                                             >
+//                                                 <Download className="w-4 h-4 inline" />
+//                                             </button>
+//                                             <button
+//                                                 onClick={() => handleDelete(receipt._id)}
+//                                                 className="text-red-600 hover:text-red-800"
+//                                                 title="Delete"
+//                                             >
+//                                                 <Trash2 className="w-4 h-4 inline" />
+//                                             </button>
+//                                         </td>
+//                                     </tr>
+//                                 ))
+//                             )}
+//                         </tbody>
+//                     </table>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default AllReceipts;
+
+// pages/receipts/Receipts.jsx
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
     Loader2, 
-    FileText, 
-    Plus, 
+    Receipt, 
     Eye, 
     Download, 
+    Trash2, 
     Search, 
-    Filter,
-    DollarSign,
-    AlertCircle
+    Filter 
 } from 'lucide-react';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
@@ -296,89 +540,95 @@ import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
 import moment from 'moment';
 
-const AllInvoices = () => {
+const AllReceipts = () => {
     const navigate = useNavigate();
-    const [invoices, setInvoices] = useState([]);
-    const [filteredInvoices, setFilteredInvoices] = useState([]);
+    const [receipts, setReceipts] = useState([]);
+    const [filteredReceipts, setFilteredReceipts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [stats, setStats] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('All');
-    const [stats, setStats] = useState({
-        totalInvoices: 0,
-        totalPaid: 0,
-        totalUnpaid: 0
-    });
+    const [paymentMethodFilter, setPaymentMethodFilter] = useState('All');
 
     useEffect(() => {
-        fetchInvoices();
+        fetchReceipts();
+        fetchStats();
     }, []);
 
     useEffect(() => {
-        filterInvoices();
-    }, [searchTerm, statusFilter, invoices]);
+        filterReceipts();
+    }, [searchTerm, paymentMethodFilter, receipts]);
 
-    const fetchInvoices = async () => {
+    const fetchReceipts = async () => {
         setIsLoading(true);
         try {
-            const response = await axiosInstance.get(API_PATHS.INVOICE.GET_ALL_INVOICES);
-            const invoicesData = response.data;
-            setInvoices(invoicesData);
-            calculateStats(invoicesData);
+            const response = await axiosInstance.get(API_PATHS.RECEIPT.GET_ALL);
+            setReceipts(response.data.receipts);
         } catch (error) {
-            toast.error('Failed to fetch invoices');
+            toast.error('Failed to fetch receipts');
             console.error(error);
         } finally {
             setIsLoading(false);
         }
     };
 
-    const calculateStats = (invoicesData) => {
-        const totalInvoices = invoicesData.length;
-        const totalPaid = invoicesData
-            .filter((inv) => inv.status === 'Paid')
-            .reduce((acc, inv) => acc + inv.total, 0);
-        const totalUnpaid = invoicesData
-            .filter((inv) => inv.status !== 'Paid')
-            .reduce((acc, inv) => acc + inv.total, 0);
-
-        setStats({ totalInvoices, totalPaid, totalUnpaid });
+    const fetchStats = async () => {
+        try {
+            const response = await axiosInstance.get(API_PATHS.RECEIPT.GET_STATS);
+            setStats(response.data.summary);
+        } catch (error) {
+            console.error('Failed to fetch stats:', error);
+        }
     };
 
-    const filterInvoices = () => {
-        let filtered = [...invoices];
+    const filterReceipts = () => {
+        let filtered = [...receipts];
 
         // Search filter
         if (searchTerm) {
             filtered = filtered.filter(
-                (invoice) =>
-                    invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    invoice.billTo?.clientName.toLowerCase().includes(searchTerm.toLowerCase())
+                (receipt) =>
+                    receipt.receiptNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    receipt.billTo?.clientName.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
-        // Status filter
-        if (statusFilter !== 'All') {
-            filtered = filtered.filter((invoice) => invoice.status === statusFilter);
+        // Payment method filter
+        if (paymentMethodFilter !== 'All') {
+            filtered = filtered.filter((receipt) => receipt.paymentMethod === paymentMethodFilter);
         }
 
-        setFilteredInvoices(filtered);
+        setFilteredReceipts(filtered);
     };
 
-    const handleDownload = async (invoiceId, invoiceNumber) => {
+    const handleDownload = async (receiptId, receiptNumber) => {
         try {
-            const res = await axiosInstance.get(API_PATHS.INVOICE.GENERATE_PDF(invoiceId), {
-                responseType: 'blob'
+            const res = await axiosInstance.get(API_PATHS.RECEIPT.GENERATE_PDF(receiptId), { 
+                responseType: 'blob' 
             });
             const blob = new Blob([res.data], { type: 'application/pdf' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `invoice-${invoiceNumber}.pdf`;
+            a.download = `receipt-${receiptNumber}.pdf`;
             a.click();
             window.URL.revokeObjectURL(url);
-            toast.success('Invoice downloaded!');
+            toast.success('Receipt downloaded!');
         } catch (error) {
-            toast.error('Failed to download invoice');
+            toast.error('Failed to download receipt');
+            console.error(error);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this receipt?')) return;
+
+        try {
+            await axiosInstance.delete(API_PATHS.RECEIPT.DELETE(id));
+            toast.success('Receipt deleted successfully');
+            fetchReceipts();
+            fetchStats();
+        } catch (error) {
+            toast.error('Failed to delete receipt');
             console.error(error);
         }
     };
@@ -394,63 +644,57 @@ const AllInvoices = () => {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Invoices</h1>
-                    <p className="text-sm text-slate-600 mt-1">Manage and track all your invoices</p>
+                    <h1 className="text-2xl font-bold text-slate-900">Receipts</h1>
+                    <p className="text-sm text-slate-600 mt-1">View and manage payment receipts</p>
                 </div>
-                <Button
-                    variant="primary"
-                    size="medium"
-                    onClick={() => navigate('/invoices/new')}
-                    icon={Plus}
-                >
-                    Create Invoice
-                </Button>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-slate-500">Total Invoices</p>
-                            <p className="text-2xl font-bold text-slate-900">{stats.totalInvoices}</p>
-                        </div>
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <FileText className="w-6 h-6 text-blue-600" />
+            {stats && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-slate-500">Total Receipts</p>
+                                <p className="text-2xl font-bold text-slate-900">{stats.totalReceipts || 0}</p>
+                            </div>
+                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <Receipt className="w-6 h-6 text-blue-600" />
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-slate-500">Total Paid</p>
-                            <p className="text-2xl font-bold text-green-600">
-                                ${stats.totalPaid.toFixed(2)}
-                            </p>
-                        </div>
-                        <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                            <DollarSign className="w-6 h-6 text-green-600" />
+                    <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-slate-500">Total Amount</p>
+                                <p className="text-2xl font-bold text-green-600">
+                                    ${(stats.totalAmount || 0).toFixed(2)}
+                                </p>
+                            </div>
+                            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <Receipt className="w-6 h-6 text-green-600" />
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-slate-500">Total Unpaid</p>
-                            <p className="text-2xl font-bold text-red-600">
-                                ${stats.totalUnpaid.toFixed(2)}
-                            </p>
-                        </div>
-                        <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                            <AlertCircle className="w-6 h-6 text-red-600" />
+                    <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-slate-500">Average Amount</p>
+                                <p className="text-2xl font-bold text-slate-900">
+                                    ${(stats.avgAmount || 0).toFixed(2)}
+                                </p>
+                            </div>
+                            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <Receipt className="w-6 h-6 text-purple-600" />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Search and Filter */}
             <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200">
@@ -460,103 +704,102 @@ const AllInvoices = () => {
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
                         <input
                             type="text"
-                            placeholder="Search by invoice # or client name..."
+                            placeholder="Search by receipt # or client name..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
-                    {/* Status Filter */}
+                    {/* Payment Method Filter */}
                     <div className="relative">
                         <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
                         <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
+                            value={paymentMethodFilter}
+                            onChange={(e) => setPaymentMethodFilter(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white"
                         >
-                            <option value="All">All Status</option>
-                            <option value="Paid">Paid</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Overdue">Overdue</option>
+                            <option value="All">All Payment Methods</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                            <option value="Credit Card">Credit Card</option>
+                            <option value="Debit Card">Debit Card</option>
+                            <option value="Check">Check</option>
+                            <option value="PayPal">PayPal</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            {/* Invoices Table */}
+            {/* Receipts Table */}
             <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full divide-y divide-slate-200">
                         <thead className="bg-slate-50">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Invoice #</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Receipt #</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Client</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Date</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Due Date</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Status</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Payment Method</th>
                                 <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Amount</th>
                                 <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200">
-                            {filteredInvoices.length === 0 ? (
+                            {filteredReceipts.length === 0 ? (
                                 <tr>
-                                    <td colSpan="7" className="px-6 py-12 text-center text-slate-500">
-                                        <FileText className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-                                        <p className="text-lg font-medium">No invoices found</p>
+                                    <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
+                                        <Receipt className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+                                        <p className="text-lg font-medium">No receipts found</p>
                                         <p className="text-sm mt-1">
-                                            {searchTerm || statusFilter !== 'All'
+                                            {searchTerm || paymentMethodFilter !== 'All'
                                                 ? 'Try adjusting your search or filters'
-                                                : 'Create your first invoice to get started'}
+                                                : 'Receipts will appear here once generated'}
                                         </p>
                                     </td>
                                 </tr>
                             ) : (
-                                filteredInvoices.map((invoice) => (
-                                    <tr key={invoice._id} className="hover:bg-slate-50">
+                                filteredReceipts.map((receipt) => (
+                                    <tr key={receipt._id} className="hover:bg-slate-50">
                                         <td className="px-6 py-4 text-sm font-medium text-slate-900">
-                                            {invoice.invoiceNumber}
+                                            {receipt.receiptNumber}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-slate-600">
-                                            {invoice.billTo?.clientName || 'N/A'}
+                                            {receipt.billTo?.clientName || 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-slate-600">
-                                            {moment(invoice.invoiceDate).format('MMM D, YYYY')}
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-slate-600">
-                                            {moment(invoice.dueDate).format('MMM D, YYYY')}
+                                            {moment(receipt.receiptDate).format('MMM D, YYYY')}
                                         </td>
                                         <td className="px-6 py-4 text-sm">
-                                            <span
-                                                className={`px-2 py-1 rounded text-xs font-medium ${
-                                                    invoice.status === 'Paid'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : invoice.status === 'Pending'
-                                                        ? 'bg-yellow-100 text-yellow-800'
-                                                        : 'bg-red-100 text-red-800'
-                                                }`}
-                                            >
-                                                {invoice.status}
+                                            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
+                                                {receipt.paymentMethod}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-right font-semibold text-slate-900">
-                                            ${invoice.total.toFixed(2)}
+                                        <td className="px-6 py-4 text-sm text-right font-semibold text-green-600">
+                                            ${receipt.amountPaid.toFixed(2)}
                                         </td>
                                         <td className="px-6 py-4 text-right text-sm space-x-2">
                                             <button
-                                                onClick={() => navigate(`/invoices/${invoice._id}`)}
+                                                onClick={() => navigate(`/receipts/${receipt._id}`)}
                                                 className="text-blue-600 hover:text-blue-800"
                                                 title="View"
                                             >
                                                 <Eye className="w-4 h-4 inline" />
                                             </button>
                                             <button
-                                                onClick={() => handleDownload(invoice._id, invoice.invoiceNumber)}
+                                                onClick={() => handleDownload(receipt._id, receipt.receiptNumber)}
                                                 className="text-green-600 hover:text-green-800"
                                                 title="Download"
                                             >
                                                 <Download className="w-4 h-4 inline" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(receipt._id)}
+                                                className="text-red-600 hover:text-red-800"
+                                                title="Delete"
+                                            >
+                                                <Trash2 className="w-4 h-4 inline" />
                                             </button>
                                         </td>
                                     </tr>
@@ -570,4 +813,4 @@ const AllInvoices = () => {
     );
 };
 
-export default AllInvoices;
+export default AllReceipts;
