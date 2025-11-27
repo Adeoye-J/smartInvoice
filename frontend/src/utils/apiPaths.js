@@ -9,6 +9,37 @@ export const API_PATHS = {
         CONNECT_GMAIL : "/api/auth/google/url", // Get Google OAuth URL,
         UPLOAD_PROFILE_PICTURE: "/api/auth/upload-profile-picture", // Upload profile picture
         UPLOAD_BUSINESS_LOGO: "/api/auth/upload-business-logo", // Upload business logo
+        
+        // 2FA
+        ENABLE_2FA: "/api/auth/2fa/enable",
+        VERIFY_2FA: "/api/auth/2fa/verify",
+        DISABLE_2FA: "/api/auth/2fa/disable",
+        VERIFY_2FA_LOGIN: "/api/auth/2fa/verify-login",
+        
+        // Password Reset
+        FORGOT_PASSWORD: "/api/auth/forgot-password",
+        RESET_PASSWORD: (token) => `/api/auth/reset-password/${token}`,
+        
+        // Google OAuth
+        GOOGLE_LOGIN: "/api/auth/google",
+        
+        // Data Export
+        EXPORT_DATA: "/api/auth/export-data"
+    },
+
+    SUBSCRIPTION: {
+        GET: "/api/subscription",
+        INITIALIZE: "/api/subscription/initialize",
+        VERIFY: (reference) => `/api/subscription/verify/${reference}`,
+        CANCEL: "/api/subscription/cancel",
+        BILLING_HISTORY: "/api/subscription/billing-history",
+        CHECK_LIMIT: (feature) => `/api/subscription/check-limit/${feature}`,
+        INCREMENT_USAGE: "/api/subscription/increment-usage"
+    },
+
+    SETTINGS: {
+        GET: "/api/settings",
+        UPDATE: "/api/settings"
     },
 
     INVOICE: {

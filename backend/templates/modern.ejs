@@ -31,6 +31,17 @@
       margin: 0 auto;
     }
     
+    
+        /* CSS variables driven by Settings.branding.primaryColor (or colors fallback) */
+        :root {
+          --brand: <%= (typeof brandColor !== 'undefined' && brandColor) ? brandColor : ((colors && colors.primary) ? colors.primary : '#0ea5e9') %>;
+          --brand-dark: <%= (colors && colors.primaryDark) ? colors.primaryDark : '#0284c7' %>;
+          --brand-darker: <%= (colors && colors.primaryDarker) ? colors.primaryDarker : '#075985' %>;
+          --brand-light: <%= (colors && colors.primaryLight) ? colors.primaryLight : 'rgba(14,165,233,0.8)' %>;
+          --brand-lighter: <%= (colors && colors.primaryLighter) ? colors.primaryLighter : 'rgba(224,242,254,0.9)' %>;
+          --brand-pale: <%= (colors && colors.primaryPale) ? colors.primaryPale : '#f0f9ff' %>;
+          --brand-accent: <%= (colors && colors.accent) ? colors.accent : ((colors && colors.primaryLight) ? colors.primaryLight : 'rgba(6,182,212,1)') %>;
+        }
     .banner {
       background: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary) 100%);
       color: white;
@@ -38,7 +49,7 @@
       border-radius: 12px 12px 0 0;
       margin-bottom: 0;
     }
-    
+          background: linear-gradient(135deg, var(--brand-darker) 0%, var(--brand) 100%);
     .banner-top {
       display: flex;
       justify-content: space-between;
@@ -126,7 +137,7 @@
       font-size: 15px;
       color: var(--text-dark);
       font-weight: 600;
-      line-height: 1.5;
+          background: var(--brand-pale);
     }
     
     .parties-section {
@@ -135,7 +146,7 @@
       gap: 30px;
       margin-bottom: 40px;
       padding: 25px;
-      background: var(--bg-card);
+          color: var(--brand-dark);
       border-radius: 10px;
     }
     
@@ -158,12 +169,12 @@
     .party-details {
       font-size: 14px;
       color: var(--text-medium);
-      line-height: 1.7;
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: separate;
+          font-size: 9px;
+          text-transform: uppercase;
+          color: var(--brand-darker);
+          font-weight: 800;
+          letter-spacing: 1px;
+          margin-bottom: 8px;
       border-spacing: 0;
       margin-bottom: 30px;
       overflow: hidden;
@@ -190,7 +201,7 @@
     
     tbody tr {
       background: white;
-      transition: background 0.2s;
+          background: var(--brand);
     }
     
     tbody tr:nth-child(even) {
@@ -218,7 +229,7 @@
     }
     
     .totals-box {
-      width: 380px;
+          border-bottom: 1px solid var(--brand-lighter);
       background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-card) 100%);
       padding: 25px;
       border-radius: 10px;
@@ -236,10 +247,10 @@
     
     .total-line.grand {
       border-top: 3px solid var(--primary);
-      margin-top: 15px;
+          background: var(--brand-pale);
       padding-top: 20px;
       font-size: 24px;
-      font-weight: 800;
+          border: 1px solid var(--brand-lighter);
       color: var(--primary-darker);
     }
     
@@ -252,26 +263,26 @@
     }
     
     .notes-title {
-      font-size: 13px;
+          border-top: 2px solid var(--brand);
       text-transform: uppercase;
       color: var(--primary-darker);
       font-weight: 800;
       letter-spacing: 1.5px;
-      margin-bottom: 10px;
+          color: var(--brand-darker);
     }
     
     .notes-text {
       font-size: 14px;
       color: var(--text-medium);
-      line-height: 1.7;
-    }
+          background: var(--brand-pale);
+          border-left: 3px solid var(--brand-light);
   </style>
 </head>
 <body>
   <div class="container">
     <div class="banner">
       <div class="banner-top">
-        <div class="company-info">
+          color: var(--brand-darker);
           <h1><%= invoice.billFrom?.businessName || 'Your Business' %></h1>
           <p>
             <%= invoice.billFrom?.address || '' %><br/>

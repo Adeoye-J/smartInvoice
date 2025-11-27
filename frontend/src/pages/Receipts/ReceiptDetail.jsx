@@ -11,10 +11,23 @@ const ReceiptDetail = () => {
     const navigate = useNavigate();
     const [receipt, setReceipt] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [appSettings, setAppSettings] = useState(null);
 
     useEffect(() => {
         fetchReceipt();
     }, [id]);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const resp = await axiosInstance.get(API_PATHS.SETTINGS.GET);
+                setAppSettings(resp.data);
+            } catch (err) {
+                console.warn('Failed to load settings for receipt preview', err?.message || err);
+            }
+        }
+        fetchSettings();
+    }, []);
 
     const fetchReceipt = async () => {
         setIsLoading(true);
@@ -102,13 +115,13 @@ const ReceiptDetail = () => {
                 {/* Header with PAID badge */}
                 <div className="flex justify-between items-start pb-8 border-b border-slate-200 mb-8">
                     <div>
-                        <h2 className="text-3xl font-bold text-slate-900">PAYMENT RECEIPT</h2>
+                        <h2 className="text-3xl font-bold" style={{ color: appSettings?.branding?.receiptColor || appSettings?.branding?.primaryColor || receipt.brandColor || '#0f172a' }}>PAYMENT RECEIPT</h2>
                         <p className="text-sm text-slate-500 mt-2"># {receipt.receiptNumber}</p>
                     </div>
                     <div className="text-right">
-                        <div className="inline-flex items-center px-4 py-2 bg-green-100 rounded-full">
-                            <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                            <span className="text-sm font-semibold text-green-800">PAID</span>
+                        <div className="inline-flex items-center px-4 py-2 rounded-full" style={{ background: (appSettings?.branding?.receiptColor ? appSettings.branding.receiptColor + '22' : '#22c55e20') }}>
+                            <CheckCircle className="w-5 h-5 mr-2" style={{ color: appSettings?.branding?.receiptColor || appSettings?.branding?.primaryColor || '#16a34a' }} />
+                            <span className="text-sm font-semibold" style={{ color: appSettings?.branding?.receiptColor || appSettings?.branding?.primaryColor || '#166534' }}>PAID</span>
                         </div>
                         <p className="text-sm text-slate-500 mt-2">
                             Date: {new Date(receipt.receiptDate).toLocaleDateString()}

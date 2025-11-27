@@ -11,11 +11,14 @@ import InvoiceDetail from './pages/Invoices/InvoiceDetail'
 import ProfilePage from './pages/Profile/ProfilePage'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
-import Security from './pages/Profile/Security'
-import Settings from './pages/Profile/Settings'
-import UpgradePlan from './pages/Profile/UpgradePlan'
 import AllReceipts from './pages/Receipts/AllReceipts'
 import ReceiptDetail from './pages/Receipts/ReceiptDetail'
+import UpgradePlan from './pages/Subscription/UpgradePlan'
+import Settings from './pages/Settings/Settings'
+import Security from './pages/Security/Security'
+import ForgotPassword from './pages/Auth/ForgotPassword'
+import ResetPassword from './pages/Auth/ResetPassword'
+import VerifyPayment from './pages/Subscription/VerifyPayment'
 
 const App = () => {
   return (
@@ -40,9 +43,12 @@ const App = () => {
                     {/* <Route path='receipt/new' element={<CreateInvoice />} /> */}
                     <Route path='receipts/:id' element={<ReceiptDetail />} />
                     <Route path='profile' element={<ProfilePage />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password/:token" element={<ResetPassword />} />
                     <Route path='settings' element={<Settings />} />
                     <Route path='security' element={<Security />} />
                     <Route path='upgrade-plan' element={<UpgradePlan />} />
+                    <Route path='/subscription/verify' element={<VerifyPayment />} />
                 </Route>
 
             </Routes>

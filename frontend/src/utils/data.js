@@ -10,6 +10,10 @@ import {
   LayoutDashboard,
   Users,
   Plus,
+  File,
+  DollarSign,
+  CheckCircle,
+  Settings,
 } from "lucide-react";
 
 export const features = [
@@ -123,16 +127,14 @@ export const faqs = [
 export const NAVIGATION_MENU = [
     { id: "dashboard", name: "Dashboard", icon: LayoutDashboard},
     {id: "Invoices", icon: FileText, items: [
-        { id: "invoices", name: "All Invoices", icon: FileText},
+        { id: "invoices", name: "All Invoices", icon: File},
         { id: "invoices/new", name: "Create Invoice", icon: Plus},
     ]},
-    {id: "Receipts", icon: FileText, items: [
-        { id: "receipts", name: "All Receipts", icon: FileText},
-        // { id: "receipts/new", name: "Create Receipt", icon: Plus},
+    {id: "Receipts", icon: CheckCircle, items: [
+        { id: "receipts", name: "All Receipts", icon: DollarSign},
     ]},
     { id: "profile", name: "Profile", icon: Users},
-    { id: "settings", name: "Settings", icon: CloudUpload},
+    { id: "settings", name: "Settings", icon: Settings},
     { id: "upgrade-plan", name: "Upgrade Plan", icon: CreditCard},
     { id: "security", name: "Security", icon: Lock},
-    // { id: "analytics", name: "Analytics", icon: BarChart3},
 ]

@@ -476,15 +476,33 @@
   <title>Invoice <%= invoice.invoiceNumber %></title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
+
+    /* CSS variables driven by Settings.branding.primaryColor (or colors fallback) */
+    :root {
+      --brand: <%= (typeof brandColor !== 'undefined' && brandColor) ? brandColor : ((colors && colors.primary) ? colors.primary : '#2563eb') %>;
+      --brand-dark: <%= (colors && colors.primaryDark) ? colors.primaryDark : '#1e40af' %>;
+      --brand-darker: <%= (colors && colors.primaryDarker) ? colors.primaryDarker : '#1e3a8a' %>;
+      --brand-light: <%= (colors && colors.primaryLight) ? colors.primaryLight : 'rgba(37,99,235,0.85)' %>;
+      --brand-lighter: <%= (colors && colors.primaryLighter) ? colors.primaryLighter : '#93c5fd' %>;
+      --brand-pale: <%= (colors && colors.primaryPale) ? colors.primaryPale : '#f1f5f9' %>;
+      --brand-accent: <%= (colors && colors.accent) ? colors.accent : ((colors && colors.primaryLight) ? colors.primaryLight : '#60a5fa') %>;
+      --accent-light: <%= (colors && colors.accentLight) ? colors.accentLight : '#93c5fd' %>;
+      --highlight: <%= (colors && colors.highlight) ? colors.highlight : '#fbbf24' %>;
+      --text: <%= (colors && colors.text) ? colors.text : '#0f172a' %>;
+      --text-medium: <%= (colors && colors.textMedium) ? colors.textMedium : '#475569' %>;
+      --text-light: <%= (colors && colors.textLight) ? colors.textLight : '#94a3b8' %>;
+      --bg: <%= (colors && colors.bg) ? colors.bg : '#f1f5f9' %>;
+      --border: <%= (colors && colors.border) ? colors.border : '#cbd5e1' %>;
+    }
+
     body { 
       font-family: 'Poppins', -apple-system, sans-serif;
-      color: #0f172a;
-      background: #f1f5f9;
+      color: var(--text);
+      background: var(--bg);
       padding: 20px;
       font-size: 10px;
     }
-    
+
     .container { 
       max-width: 750px; 
       margin: 0 auto;
@@ -493,14 +511,14 @@
       overflow: hidden;
       box-shadow: 0 10px 15px rgba(0,0,0,0.1);
     }
-    
+
     .hero {
-      background: linear-gradient(135deg, <%= colors.primaryDarker %> 0%, <%= colors.primary %> 100%);
+      background: linear-gradient(135deg, var(--brand-darker) 0%, var(--brand) 100%);
       padding: 25px 30px;
       position: relative;
       overflow: hidden;
     }
-    
+
     .hero::before {
       content: '';
       position: absolute;
@@ -511,7 +529,7 @@
       background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
       border-radius: 50%;
     }
-    
+
     .hero-content {
       position: relative;
       z-index: 1;
@@ -520,13 +538,13 @@
       align-items: center;
       color: white;
     }
-    
+
     .business-section {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    
+
     .logo {
       width: 50px;
       height: 50px;
@@ -535,19 +553,19 @@
       padding: 6px;
       object-fit: contain;
     }
-    
+
     .business-info h1 {
       font-size: 18px;
       font-weight: 800;
       margin-bottom: 4px;
     }
-    
+
     .business-info p {
       font-size: 9px;
       opacity: 0.95;
       line-height: 1.4;
     }
-    
+
     .invoice-badge {
       background: rgba(255,255,255,0.2);
       backdrop-filter: blur(10px);
@@ -556,7 +574,7 @@
       text-align: right;
       border: 1px solid rgba(255,255,255,0.3);
     }
-    
+
     .badge-label {
       font-size: 9px;
       text-transform: uppercase;
@@ -564,14 +582,14 @@
       opacity: 0.9;
       font-weight: 600;
     }
-    
+
     .badge-number {
       font-size: 20px;
       font-weight: 900;
       margin: 4px 0;
       letter-spacing: -0.5px;
     }
-    
+
     .badge-status {
       display: inline-block;
       padding: 4px 10px;
@@ -583,60 +601,60 @@
       letter-spacing: 0.5px;
       margin-top: 6px;
     }
-    
+
     .main-body {
       padding: 30px;
     }
-    
+
     .info-cards {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
       margin-bottom: 20px;
     }
-    
+
     .info-card {
-      background: <%= colors.primaryLighter %>;
+      background: var(--brand-lighter);
       padding: 12px;
       border-radius: 8px;
       position: relative;
       overflow: hidden;
     }
-    
+
     .card-label {
       font-size: 9px;
       text-transform: uppercase;
-      color: <%= colors.primaryDarker %>;
+      color: var(--brand-darker);
       font-weight: 700;
       letter-spacing: 1px;
       margin-bottom: 4px;
     }
-    
+
     .card-value {
       font-size: 11px;
-      color: <%= colors.primaryDarker %>;
+      color: var(--brand-darker);
       font-weight: 700;
     }
-    
+
     .client-section {
-      background: #f1f5f9;
+      background: var(--bg);
       padding: 18px;
       border-radius: 8px;
       margin-bottom: 20px;
-      border-left: 4px solid #fbbf24;
+      border-left: 4px solid var(--highlight);
     }
-    
+
     .client-header {
       display: flex;
       align-items: center;
       gap: 10px;
       margin-bottom: 10px;
     }
-    
+
     .client-icon {
       width: 30px;
       height: 30px;
-      background: linear-gradient(135deg, <%= colors.primary %> 0%, <%= colors.primaryLight %> 100%);
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
       border-radius: 6px;
       display: flex;
       align-items: center;
@@ -645,7 +663,7 @@
       font-weight: 800;
       font-size: 14px;
     }
-    
+
     .client-title {
       font-size: 9px;
       text-transform: uppercase;
@@ -653,20 +671,20 @@
       font-weight: 700;
       letter-spacing: 1px;
     }
-    
+
     .client-name {
       font-size: 14px;
       font-weight: 800;
       color: #0f172a;
       margin-bottom: 4px;
     }
-    
+
     .client-details {
       font-size: 10px;
       color: #475569;
       line-height: 1.5;
     }
-    
+
     .items-table {
       width: 100%;
       border-collapse: separate;
@@ -676,12 +694,12 @@
       overflow: hidden;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    
+
     .items-table thead {
-      background: linear-gradient(135deg, <%= colors.primaryDarker %> 0%, <%= colors.primary %> 100%);
+      background: linear-gradient(135deg, var(--brand-darker) 0%, var(--brand) 100%);
       color: white;
     }
-    
+
     .items-table thead th {
       padding: 10px 12px;
       text-align: left;
@@ -690,54 +708,54 @@
       font-weight: 700;
       letter-spacing: 1px;
     }
-    
+
     .items-table thead th.right { text-align: right; }
     .items-table thead th.center { text-align: center; }
-    
+
     .items-table tbody tr {
       background: white;
     }
-    
+
     .items-table tbody tr:nth-child(odd) {
       background: #f8fafc;
     }
-    
+
     .items-table tbody td {
       padding: 12px;
       font-size: 10px;
       color: #0f172a;
       border-bottom: 1px solid #e2e8f0;
     }
-    
+
     .items-table tbody td:first-child {
       font-weight: 700;
-      color: <%= colors.primaryDark %>;
+      color: var(--brand-dark);
     }
-    
+
     .items-table tbody td.right { 
       text-align: right; 
       font-weight: 600;
     }
-    
+
     .items-table tbody td.center { 
       text-align: center;
       font-weight: 600;
     }
-    
+
     .totals-area {
       display: flex;
       justify-content: flex-end;
       margin-top: 20px;
     }
-    
+
     .totals-container {
       width: 280px;
-      background: <%= colors.primaryPale %>;
+      background: var(--brand-pale);
       padding: 18px;
       border-radius: 8px;
-      border: 1px solid <%= colors.primaryLighter %>;
+      border: 1px solid var(--brand-lighter);
     }
-    
+
     .total-line {
       display: flex;
       justify-content: space-between;
@@ -746,28 +764,28 @@
       color: #475569;
       font-weight: 600;
     }
-    
+
     .total-line span:last-child {
       color: #0f172a;
     }
-    
+
     .total-grand {
-      border-top: 2px solid <%= colors.primary %>;
+      border-top: 2px solid var(--brand);
       margin-top: 10px;
       padding-top: 12px;
       font-size: 18px;
       font-weight: 900;
-      color: <%= colors.primaryDark %>;
+      color: var(--brand-dark);
     }
-    
+
     .notes-box {
       margin-top: 25px;
       padding: 15px;
       background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
       border-radius: 8px;
-      border-left: 4px solid #fbbf24;
+      border-left: 4px solid var(--highlight);
     }
-    
+
     .notes-title {
       font-size: 9px;
       text-transform: uppercase;
@@ -776,16 +794,16 @@
       letter-spacing: 1px;
       margin-bottom: 6px;
     }
-    
+
     .notes-text {
       font-size: 10px;
       color: #78350f;
       line-height: 1.6;
     }
-    
+
     .footer-bar {
       height: 6px;
-      background: linear-gradient(90deg, <%= colors.primaryDarker %> 0%, <%= colors.primary %> 100%);
+      background: linear-gradient(90deg, var(--brand-darker) 0%, var(--brand) 100%);
     }
   </style>
 </head>

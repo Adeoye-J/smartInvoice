@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { API_PATHS } from '../../utils/apiPaths';
 import axiosInstance from '../../utils/axiosInstance';
+import Button from '../ui/Button';
 
 const ReminderModal = ({ isOpen, onClose, invoice }) => {
   const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     if (invoice) {
@@ -19,16 +20,16 @@ const ReminderModal = ({ isOpen, onClose, invoice }) => {
   if (!isOpen || !invoice) return null;
 
   const handleSend = async () => {
-    setLoading(true);
+    setSending(true);
     try {
       await axiosInstance.post(API_PATHS.INVOICE.SEND_INVOICE_EMAIL(invoice._id), { message });
-      toast.success('Email sent via your connected Gmail.');
+      toast.success('Reminder Email Sent Successfully.');
       onClose();
     } catch (err) {
       console.error(err);
-      toast.error(err?.response?.data?.message || 'Failed to send email.');
+      toast.error(err?.response?.data?.message || 'Failed to send reminder email.');
     } finally {
-      setLoading(false);
+      setSending(false);
     }
   };
 
@@ -45,9 +46,12 @@ const ReminderModal = ({ isOpen, onClose, invoice }) => {
 
         <div className="flex justify-end gap-2">
           <button onClick={onClose} className="px-3 py-2 border rounded">Cancel</button>
-          <button onClick={handleSend} className="px-3 py-2 bg-blue-600 text-white rounded" disabled={loading}>
-            {loading ? 'Sending...' : 'Send Email'}
-          </button>
+          {/* <button onClick={handleSend} className="px-3 py-2 bg-blue-600 text-white rounded" disabled={sending}>
+            {sending ? 'Sending...' : 'Send Email'}
+          </button> */}
+            <Button onClick={handleSend} isLoading={sending}>
+                Send Reminder
+            </Button>
         </div>
       </div>
     </div>

@@ -7,6 +7,8 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes")
 const invoiceRoutes = require("./routes/invoiceRoutes")
 const receiptRoutes = require("./routes/receiptRoutes")
+const subscriptionRoutes = require("./routes/subscriptionRoutes");
+const settingsRoutes = require("./routes/settingsRoutes");
 
 const app = express();
 
@@ -29,6 +31,8 @@ app.use(express.json({ limit: '10mb' }));
 app.use("/api/auth", authRoutes)
 app.use("/api/invoices", invoiceRoutes)
 app.use("/api/receipts", receiptRoutes)
+app.use("/api/subscription", subscriptionRoutes)
+app.use("/api/settings", settingsRoutes)
 
 // basic root
 app.get('/', (req, res) => res.send('API running'));

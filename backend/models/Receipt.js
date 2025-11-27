@@ -1,5 +1,3 @@
-// models/Receipt.js
-
 const mongoose = require("mongoose");
 
 const receiptSchema = new mongoose.Schema(
@@ -106,6 +104,7 @@ const receiptSchema = new mongoose.Schema(
 receiptSchema.index({ user: 1, receiptDate: -1 });
 receiptSchema.index({ receiptNumber: 1 });
 
-receiptSchema.index({ user: 1, receiptNumber: 1 }, { unique: true });
+// Remove the pre-save hook that auto-generates receipt number
+// (We'll generate it on the frontend instead)
 
 module.exports = mongoose.model("Receipt", receiptSchema);

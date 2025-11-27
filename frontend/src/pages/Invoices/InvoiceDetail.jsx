@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axiosInstance from '../../utils/axiosInstance'
 import { API_PATHS } from '../../utils/apiPaths'
-import { Loader2, Edit, Printer, AlertCircle, Mail, PlusCircleIcon, ReceiptIcon } from 'lucide-react'
+import { Loader2, Edit, Printer, AlertCircle, Mail, PlusCircleIcon, ReceiptIcon, ArrowLeft } from 'lucide-react'
 import toast from 'react-hot-toast'
 import CreateInvoice from './CreateInvoice'
 import Button from '../../components/ui/Button'
@@ -22,6 +22,7 @@ const InvoiceDetail = () => {
     const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false)
     const [statusChangeLoading, setStatusChangeLoading] = useState(null)
     const invoiceRef = useRef()
+    const [appSettings, setAppSettings] = useState(null)
 
     useEffect(() => {
         const fetchInvoice = async () => {
@@ -50,6 +51,20 @@ const InvoiceDetail = () => {
 
         fetchInvoice()
     }, [id])
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const resp = await axiosInstance.get(API_PATHS.SETTINGS.GET);
+                setAppSettings(resp.data);
+            } catch (err) {
+                // non-fatal
+                console.warn('Failed to fetch settings for preview', err?.message || err);
+            }
+        };
+
+        fetchSettings();
+    }, []);
 
      const handleStatusChange = async (invoice) => {
         setStatusChangeLoading(invoice._id);
@@ -210,9 +225,19 @@ const InvoiceDetail = () => {
             />
 
             <div className="flex flex-col md:flex-row items-start sm:items-center justify-between mb-6 print:hidden">
-                <h1 className="text-2xl font-semibold text-slate-900 mb-4 sm:mb-0">
-                    <span className='text-slate-500'>{invoice.invoiceNumber}</span>
-                </h1>
+                <div className="flex items-center gap-3 mb-4 sm:mb-0">
+                    <Button
+                        variant="ghost"
+                        size="small"
+                        onClick={() => navigate('/invoices')}
+                        icon={ArrowLeft}
+                    >
+                        Back
+                    </Button>
+                            <h1 className="text-2xl font-semibold" style={{ color: appSettings?.branding?.invoiceColor || appSettings?.branding?.primaryColor || invoice.brandColor || '#1e40af' }}>
+                        <span className='text-slate-500' style={{ color: 'inherit' }}>{invoice.invoiceNumber}</span>
+                    </h1>
+                </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                     {invoice.status === "Paid" && (
                         <>
@@ -338,7 +363,7 @@ const InvoiceDetail = () => {
                         </div>
                         <div className="sm:text-right">
                             <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Template Style</h3>
-                            <p className="font-medium text-slate-600">{invoice.templateId}</p>
+                            <p className="font-medium text-slate-600">{appSettings?.branding?.invoiceTemplate || appSettings?.branding?.defaultTemplate || invoice.templateId || 'classic'}</p>
                         </div>
                     </div>
 

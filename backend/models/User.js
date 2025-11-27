@@ -48,6 +48,28 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: '#1e40af' // default blue
         },
+        // Security
+        twoFactorEnabled: {
+            type: Boolean,
+            default: false
+        },
+        twoFactorSecret: {
+            type: String,
+            select: false
+        },
+        passwordResetToken: String,
+        passwordResetExpires: Date,
+        
+        // OAuth
+        googleId: String,
+        authProvider: {
+            type: String,
+            enum: ["local", "google"],
+            default: "local"
+        },
+        
+        // Last login
+        lastLogin: Date
     },
     { timestamps: true }
 );

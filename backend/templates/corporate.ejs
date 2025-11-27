@@ -5,24 +5,38 @@
   <title>Invoice <%= invoice.invoiceNumber %></title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
+
+    /* CSS variables driven by Settings.branding.primaryColor (or colors fallback) */
+    :root {
+      --brand: <%= (typeof brandColor !== 'undefined' && brandColor) ? brandColor : ((colors && colors.primary) ? colors.primary : '#1d4ed8') %>;
+      --brand-dark: <%= (colors && colors.primaryDark) ? colors.primaryDark : '#1e3a8a' %>;
+      --brand-darker: <%= (colors && colors.primaryDarker) ? colors.primaryDarker : '#1e40af' %>;
+      --brand-light: <%= (colors && colors.primaryLight) ? colors.primaryLight : 'rgba(29,78,216,0.85)' %>;
+      --brand-lighter: <%= (colors && colors.primaryLighter) ? colors.primaryLighter : '#93c5fd' %>;
+      --brand-pale: <%= (colors && colors.primaryPale) ? colors.primaryPale : '#f8fafc' %>;
+      --text: <%= (colors && colors.text) ? colors.text : '#1e293b' %>;
+      --text-medium: <%= (colors && colors.textMedium) ? colors.textMedium : '#475569' %>;
+      --bg: <%= (colors && colors.bg) ? colors.bg : 'white' %>;
+      --border: <%= (colors && colors.border) ? colors.border : '#e2e8f0' %>;
+    }
+
     body { 
       font-family: 'Arial', 'Helvetica', sans-serif;
-      color: #1e293b;
-      background: white;
+      color: var(--text);
+      background: var(--bg);
       padding: 20px;
       font-size: 10px;
       line-height: 1.4;
     }
-    
+
     .container { 
       max-width: 750px; 
       margin: 0 auto;
-      border: 2px solid <%= colors.primary %>;
+      border: 2px solid var(--brand);
     }
-    
+
     .header {
-      background: <%= colors.primary %>;
+      background: var(--brand);
       color: white;
       padding: 20px 25px;
       display: flex;
@@ -101,8 +115,8 @@
     
     .dates-bar {
       display: flex;
-      background: <%= colors.primaryPale %>;
-      border: 1px solid <%= colors.primaryLighter %>;
+      background: var(--brand-pale);
+      border: 1px solid var(--brand-lighter);
       margin-bottom: 25px;
     }
     
@@ -137,14 +151,14 @@
       gap: 30px;
       margin-bottom: 25px;
       padding-bottom: 20px;
-      border-bottom: 2px solid <%= colors.primary %>;
+      border-bottom: 2px solid var(--brand);
     }
     
     .billing-box h3 {
       font-size: 9px;
       text-transform: uppercase;
       color: white;
-      background: <%= colors.primaryDark %>;
+      background: var(--brand-dark);
       padding: 6px 10px;
       font-weight: 700;
       letter-spacing: 1px;
@@ -168,11 +182,11 @@
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 20px;
-      border: 1px solid <%= colors.primaryLighter %>;
+      border: 1px solid var(--brand-lighter);
     }
     
     thead {
-      background: <%= colors.primaryDarker %>;
+      background: var(--brand-darker);
       color: white;
     }
     
@@ -183,7 +197,7 @@
       text-transform: uppercase;
       font-weight: 700;
       letter-spacing: 0.5px;
-      border-right: 1px solid <%= colors.primaryLight %>;
+      border-right: 1px solid var(--brand-light);
     }
     
     thead th:last-child {
@@ -194,7 +208,7 @@
     thead th.center { text-align: center; }
     
     tbody tr {
-      border-bottom: 1px solid <%= colors.primaryLighter %>;
+      border-bottom: 1px solid var(--brand-lighter);
     }
     
     tbody tr:last-child {
@@ -204,8 +218,8 @@
     tbody td {
       padding: 10px;
       font-size: 10px;
-      color: #0f172a;
-      border-right: 1px solid <%= colors.primaryLighter %>;
+      color: var(--text);
+      border-right: 1px solid var(--brand-lighter);
     }
     
     tbody td:last-child {
@@ -226,7 +240,7 @@
     
     .summary-table {
       width: 280px;
-      border: 2px solid <%= colors.primary %>;
+      border: 2px solid var(--brand);
     }
     
     .summary-row {
@@ -234,7 +248,7 @@
       justify-content: space-between;
       padding: 8px 12px;
       font-size: 10px;
-      border-bottom: 1px solid <%= colors.primaryLighter %>;
+      border-bottom: 1px solid var(--brand-lighter);
     }
     
     .summary-row:last-child {
@@ -242,19 +256,19 @@
     }
     
     .summary-row.subtotal {
-      background: <%= colors.primaryPale %>;
-      color: #475569;
+      background: var(--brand-pale);
+      color: var(--text-medium);
       font-weight: 600;
     }
     
     .summary-row.tax {
-      background: <%= colors.primaryPale %>;
-      color: #475569;
+      background: var(--brand-pale);
+      color: var(--text-medium);
       font-weight: 600;
     }
     
     .summary-row.total {
-      background: <%= colors.primary %>;
+      background: var(--brand);
       color: white;
       font-size: 14px;
       font-weight: 900;
@@ -263,12 +277,12 @@
     
     .notes {
       margin-top: 25px;
-      border: 1px solid <%= colors.primaryLighter %>;
-      background: <%= colors.primaryPale %>;
+      border: 1px solid var(--brand-lighter);
+      background: var(--brand-pale);
     }
     
     .notes-header {
-      background: <%= colors.primaryDark %>;
+      background: var(--brand-dark);
       color: white;
       padding: 6px 12px;
       font-size: 9px;
@@ -287,7 +301,7 @@
     .footer {
       margin-top: 25px;
       padding: 15px 25px;
-      background: <%= colors.primaryDarker %>;
+      background: var(--brand-darker);
       color: white;
       text-align: center;
       font-size: 9px;

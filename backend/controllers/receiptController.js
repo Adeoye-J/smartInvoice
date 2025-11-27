@@ -3,408 +3,139 @@
 const mongoose = require("mongoose");
 const Receipt = require("../models/Receipt");
 const Invoice = require("../models/Invoice");
+const Subscription = require("../models/Subscription");
 
-// // @desc    Generate receipt from paid invoice
-// // @route   POST /api/receipts/generate/:invoiceId
-// // @access  Private
-// exports.generateReceipt = async (req, res) => {
-//     try {
-//         const { invoiceId } = req.params;
-//         const { paymentMethod, transactionId, paymentDate, notes } = req.body;
-
-//         // 1. Find the invoice
-//         const invoice = await Invoice.findById(invoiceId);
-//         if (!invoice) {
-//             return res.status(404).json({ message: "Invoice not found" });
-//         }
-
-//         // 2. Verify ownership
-//         if (invoice.user.toString() !== req.user.id) {
-//             return res.status(403).json({ message: "Not authorized to generate receipt for this invoice" });
-//         }
-
-//         // 3. Check if invoice is paid
-//         if (invoice.status !== "Paid") {
-//             return res.status(400).json({ message: "Cannot generate receipt for unpaid invoice" });
-//         }
-
-//         // 4. Check if receipt already exists
-//         const existingReceipt = await Receipt.findOne({ invoice: invoiceId });
-//         if (existingReceipt) {
-//             return res.status(400).json({ 
-//                 message: "Receipt already exists for this invoice",
-//                 receipt: existingReceipt 
-//             });
-//         }
-
-//         // 5. Generate unique receipt number
-//         const receipts = await Receipt.find({ user: req.user.id }).sort({ createdAt: -1 });
-//         let maxNum = 0;
-//         receipts.forEach((receipt) => {
-//             const num = parseInt(receipt.receiptNumber.split("-")[1]);
-//             if (!isNaN(num) && num > maxNum) maxNum = num;
-//         });
-//         const receiptNumber = `RCP-${String(maxNum + 1).padStart(4, "0")}`;
-
-//         // 6. Create receipt
-//         const receipt = await Receipt.create({
-//             user: req.user.id,
-//             invoice: invoiceId,
-//             receiptNumber,
-//             receiptDate: new Date(),
-//             paymentMethod: paymentMethod || "Cash",
-//             paymentDate: paymentDate || new Date(),
-//             transactionId: transactionId || "",
-//             amountPaid: invoice.total,
-//             currency: "USD",
-//             billFrom: invoice.billFrom,
-//             billTo: invoice.billTo,
-//             items: invoice.items,
-//             subTotal: invoice.subTotal,
-//             taxTotal: invoice.taxTotal,
-//             total: invoice.total,
-//             notes: notes || invoice.notes || "",
-//             templateId: invoice.templateId || "classic",
-//             brandColor: invoice.brandColor || "#1e40af"
-//         });
-
-//         res.status(201).json({
-//             message: "Receipt generated successfully",
-//             receipt
-//         });
-
-//     } catch (error) {
-//         console.error("Generate receipt error:", error);
-//         res.status(500).json({ message: "Server error", error: error.message });
-//     }
-// };
-
-
-// controllers/receiptController.js
-// const mongoose = require('mongoose');
-// const Invoice = require('../models/Invoice');   // adjust path if needed
-// const Receipt = require('../models/Receipt');   // adjust path if needed
-
-// ---------- Counter model (atomic sequence) ----------
-// const CounterSchema = new mongoose.Schema({
-//   _id: { type: String, required: true }, // e.g. 'receiptNumber'
-//   seq: { type: Number, default: 0 }
-// }, { timestamps: false });
-
-// // Avoid model overwrite errors in server restarts
-// const Counter = mongoose.models.Counter || mongoose.model('Counter', CounterSchema);
-
-// ---------- Helper: get next receipt number atomically ----------
-// async function getNextReceiptNumber(counterId = 'receiptNumber') {
-//   // findByIdAndUpdate with $inc and upsert gives atomic increment
-//   const updated = await Counter.findByIdAndUpdate(
-//     counterId,
-//     { $inc: { seq: 1 } },
-//     { new: true, upsert: true, setDefaultsOnInsert: true }
-//   ).lean();
-
-//   const seq = (updated && updated.seq) ? updated.seq : 0;
-//   return `RCP-${String(seq).padStart(4, '0')}`;
-// }
-
-// ---------- Controller: generateReceipt ----------
-/**
- * @desc    Generate receipt from paid invoice
- * @route   POST /api/receipts/generate/:invoiceId
- * @access  Private
- */
-// exports.generateReceipt = async (req, res) => {
-//   try {
-//     const { invoiceId } = req.params;
-//     const { paymentMethod, transactionId, paymentDate, notes } = req.body;
-
-//     // 1. Find the invoice
-//     const invoice = await Invoice.findById(invoiceId);
-//     if (!invoice) {
-//       return res.status(404).json({ message: "Invoice not found" });
-//     }
-
-//     // 2. Verify ownership (assuming req.user.id exists)
-//     if (invoice.user.toString() !== req.user.id) {
-//       return res.status(403).json({ message: "Not authorized to generate receipt for this invoice" });
-//     }
-
-//     // 3. Check if invoice is paid
-//     if (invoice.status !== "Paid") {
-//       return res.status(400).json({ message: "Cannot generate receipt for unpaid invoice" });
-//     }
-
-//     // 4. Check if receipt already exists for this invoice
-//     const existingReceipt = await Receipt.findOne({ invoice: invoiceId });
-//     if (existingReceipt) {
-//       return res.status(400).json({
-//         message: "Receipt already exists for this invoice",
-//         receipt: existingReceipt
-//       });
-//     }
-
-//     // 5. Generate unique receipt number and try to create the receipt.
-//     //    We loop a couple times if a duplicate key occurs (very unlikely with counter).
-//     const MAX_ATTEMPTS = 3;
-//     let attempt = 0;
-//     let receiptDoc = null;
-//     let lastError = null;
-
-//     while (attempt < MAX_ATTEMPTS && !receiptDoc) {
-//       attempt += 1;
-//       const receiptNumber = await getNextReceiptNumber();
-
-//       try {
-//         receiptDoc = await Receipt.create({
-//           user: req.user.id,
-//           invoice: invoiceId,
-//           receiptNumber,
-//           receiptDate: new Date(),
-//           paymentMethod: paymentMethod || "Cash",
-//           paymentDate: paymentDate ? new Date(paymentDate) : new Date(),
-//           transactionId: transactionId || "",
-//           amountPaid: invoice.total,
-//           currency: invoice.currency || "USD",
-//           billFrom: invoice.billFrom,
-//           billTo: invoice.billTo,
-//           items: invoice.items,
-//           subTotal: invoice.subTotal,
-//           taxTotal: invoice.taxTotal,
-//           total: invoice.total,
-//           notes: notes || invoice.notes || "",
-//           templateId: invoice.templateId || "classic",
-//           brandColor: invoice.brandColor || "#1e40af"
-//         });
-
-//       } catch (err) {
-//         lastError = err;
-//         // If duplicate key on receiptNumber, get the next sequence and retry.
-//         if (err && (err.code === 11000 || (err.keyPattern && err.keyPattern.receiptNumber))) {
-//           // loop to try again
-//           continue;
-//         }
-//         // Any other error -> rethrow to outer catch
-//         throw err;
-//       }
-//     }
-
-//     if (!receiptDoc) {
-//       console.error('Failed to create receipt after retries:', lastError);
-//       return res.status(500).json({ message: "Failed to generate receipt. Please try again." });
-//     }
-
-//     // 6. Success
-//     return res.status(201).json({
-//       message: "Receipt generated successfully",
-//       receipt: receiptDoc
-//     });
-
-//   } catch (error) {
-//     console.error("Generate receipt error:", error);
-
-//     // If duplicate key somehow bubbles up, give a friendly response
-//     if (error && error.code === 11000) {
-//       return res.status(400).json({ message: "Duplicate receipt number generated. Please retry." });
-//     }
-
-//     return res.status(500).json({ message: "Server error", error: error.message });
-//   }
-// };
-
-
-// controllers/receiptController.js
-// const mongoose = require('mongoose');
-// const Invoice = require('../models/Invoice');   // adjust path if needed
-// const Receipt = require('../models/Receipt');   // adjust path if needed
-
-// ---------- Counter model (atomic sequence per key) ----------
-const CounterSchema = new mongoose.Schema({
-  _id: { type: String, required: true }, // e.g. 'receiptNumber_<userId>'
-  seq: { type: Number, default: 0 }
-}, { timestamps: false });
-
-const Counter = mongoose.models.Counter || mongoose.model('Counter', CounterSchema);
-
-/**
- * Returns next receipt number for a user, e.g. "RCP-0001".
- * Guarantees atomic increments using a Counter document keyed by `receiptNumber_<userId>`.
- *
- * Bootstrapping logic:
- *  - If the counter doc doesn't exist yet, we compute the current max numeric suffix
- *    among that user's existing receipts and use $setOnInsert with that max so the
- *    first reserved value becomes max+1. We then $inc seq by 1 atomically.
- *
- * This is safe in concurrent environments because upsert + $setOnInsert + $inc is atomic.
- */
-async function getNextReceiptNumberForUser(userId) {
-  if (!userId) throw new Error('userId required for receipt number generation');
-
-  const counterId = `receiptNumber_${userId}`;
-
-  // Compute current max for user (numeric part). This is only used as the set-on-insert value.
-  // We try to find the highest numeric suffix already present for that user.
-  // If no receipts exist, maxNum will be 0.
-  const lastReceipt = await Receipt.findOne({ user: userId }).sort({ createdAt: -1 }).lean();
-
-  let maxNum = 0;
-  if (lastReceipt && lastReceipt.receiptNumber) {
-    // Expect format "RCP-0001" etc. Be defensive.
-    const parts = lastReceipt.receiptNumber.split('-');
-    const maybeNum = parseInt(parts[1], 10);
-    if (!isNaN(maybeNum)) maxNum = maybeNum;
-  } else {
-    // If sort by createdAt didn't find anything, we can still attempt an aggregation to be safe
-    // (handles cases where createdAt might not be set in older docs).
-    const agg = await Receipt.aggregate([
-      { $match: { user: new mongoose.Types.ObjectId(userId) } },
-      {
-        $project: {
-          n: {
-            $toInt: {
-              $arrayElemAt: [
-                { $split: ["$receiptNumber", "-"] },
-                1
-              ]
-            }
-          }
-        }
-      },
-      { $group: { _id: null, maxN: { $max: "$n" } } }
-    ]);
-    if (agg && agg.length > 0 && agg[0].maxN) {
-      maxNum = agg[0].maxN;
-    }
-  }
-
-  // Use findByIdAndUpdate with upsert and combine $setOnInsert (bootstrap value) with $inc.
-  // If the doc exists, $inc will return the next seq. If it doesn't, $setOnInsert sets seq=maxNum,
-  // and $inc increments it by 1 in the same atomic operation -> giving maxNum+1.
-  const updated = await Counter.findByIdAndUpdate(
-    counterId,
-    {
-      $inc: { seq: 1 },
-      $setOnInsert: { seq: maxNum } // will be used only on insert
-    },
-    { new: true, upsert: true, setDefaultsOnInsert: true }
-  ).lean();
-
-  const seq = (updated && updated.seq) ? updated.seq : 1;
-  return `RCP-${String(seq).padStart(4, '0')}`;
-}
-
-// ---------- Controller: generateReceipt ----------
-/**
- * @desc    Generate receipt from paid invoice (per-user sequential receipt numbers)
- * @route   POST /api/receipts/generate/:invoiceId
- * @access  Private
- */
+// @desc    Generate receipt from paid invoice
+// @route   POST /api/receipts/generate/:invoiceId
+// @access  Private
 exports.generateReceipt = async (req, res) => {
-  try {
-    const { invoiceId } = req.params;
-    const { paymentMethod, transactionId, paymentDate, notes } = req.body;
-    const userId = req.user && req.user.id;
+    try {
+        const { invoiceId } = req.params;
+        const { 
+            receiptNumber,  // NOW COMES FROM FRONTEND
+            paymentMethod, 
+            transactionId, 
+            paymentDate, 
+            notes 
+        } = req.body;
 
-    if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized: user not found on request' });
-    }
+        // 1. Validate receipt number is provided
+        if (!receiptNumber) {
+            return res.status(400).json({ message: "Receipt number is required" });
+        }
 
-    // 1. Find the invoice
-    const invoice = await Invoice.findById(invoiceId);
-    if (!invoice) {
-      return res.status(404).json({ message: "Invoice not found" });
-    }
+        // 2. Check if receipt number already exists
+        const existingReceiptWithNumber = await Receipt.findOne({ receiptNumber, user: req.user.id });
+        if (existingReceiptWithNumber) {
+            return res.status(400).json({ message: "Receipt number already exists" });
+        }
 
-    // 2. Verify ownership (assuming invoice.user is ObjectId)
-    if (invoice.user.toString() !== userId) {
-      return res.status(403).json({ message: "Not authorized to generate receipt for this invoice" });
-    }
+        // 3. Find the invoice
+        const invoice = await Invoice.findById(invoiceId);
+        if (!invoice) {
+            return res.status(404).json({ message: "Invoice not found" });
+        }
 
-    // 3. Check if invoice is paid
-    if (invoice.status !== "Paid") {
-      return res.status(400).json({ message: "Cannot generate receipt for unpaid invoice" });
-    }
+        // 4. Verify ownership
+        if (invoice.user.toString() !== req.user.id) {
+            return res.status(403).json({ message: "Not authorized to generate receipt for this invoice" });
+        }
 
-    // 4. Check if receipt already exists for this invoice
-    const existingReceipt = await Receipt.findOne({ invoice: invoiceId });
-    if (existingReceipt) {
-      return res.status(400).json({
-        message: "Receipt already exists for this invoice",
-        receipt: existingReceipt
-      });
-    }
+        // 5. Check if invoice is paid
+        if (invoice.status !== "Paid") {
+            return res.status(400).json({ message: "Cannot generate receipt for unpaid invoice" });
+        }
 
-    // 5. Generate unique receipt number for this user and create receipt.
-    //    We'll do a few attempts if a duplicate 11000 somehow occurs.
-    const MAX_ATTEMPTS = 3;
-    let attempt = 0;
-    let receiptDoc = null;
-    let lastError = null;
+        // 6. Check if receipt already exists for this invoice
+        const existingReceipt = await Receipt.findOne({ invoice: invoiceId });
+        if (existingReceipt) {
+            return res.status(400).json({ 
+                message: "Receipt already exists for this invoice",
+                receipt: existingReceipt 
+            });
+        }
 
-    while (attempt < MAX_ATTEMPTS && !receiptDoc) {
-      attempt += 1;
-      const receiptNumber = await getNextReceiptNumberForUser(userId);
+        // Server-side quota check and increment for receipts
+        try {
+            const subscription = await Subscription.findOne({ user: req.user.id });
+            if (subscription) {
+                const now = new Date();
+                if (!subscription.currentPeriodEnd || (subscription.currentPeriodEnd && now > subscription.currentPeriodEnd)) {
+                    subscription.usage = { invoicesCreated: 0, receiptsGenerated: 0, emailsSent: 0 };
+                    subscription.currentPeriodStart = now;
+                    const periodEnd = new Date();
+                    periodEnd.setMonth(periodEnd.getMonth() + (subscription.billingCycle === 'yearly' ? 12 : 1));
+                    subscription.currentPeriodEnd = periodEnd;
+                }
 
-      try {
-        receiptDoc = await Receipt.create({
-          user: userId,
-          invoice: invoiceId,
-          receiptNumber,
-          receiptDate: new Date(),
-          paymentMethod: paymentMethod || "Cash",
-          paymentDate: paymentDate ? new Date(paymentDate) : new Date(),
-          transactionId: transactionId || "",
-          amountPaid: invoice.total,
-          currency: invoice.currency || "USD",
-          billFrom: invoice.billFrom,
-          billTo: invoice.billTo,
-          items: invoice.items,
-          subTotal: invoice.subTotal,
-          taxTotal: invoice.taxTotal,
-          total: invoice.total,
-          notes: notes || invoice.notes || "",
-          templateId: invoice.templateId || "classic",
-          brandColor: invoice.brandColor || "#1e40af"
+                const limit = subscription.limits?.receiptsPerMonth ?? -1;
+                if (limit !== -1 && subscription.usage.receiptsGenerated >= limit) {
+                    return res.status(400).json({ message: `Monthly receipt limit reached (${limit}).` });
+                }
+
+                // increment now (save after creating receipt)
+                subscription.usage.receiptsGenerated += 1;
+                await subscription.save();
+            }
+        } catch (err) {
+            console.warn('Subscription check failed during receipt generation:', err.message || err);
+        }
+
+        // 7. Create receipt - determine template/color from invoice, then user Settings as fallback
+        let chosenTemplate = invoice.templateId || null;
+        let chosenColor = invoice.brandColor || null;
+        try {
+            const Settings = require('../models/Settings');
+            const userSettings = await Settings.findOne({ user: req.user.id }).lean();
+            if (userSettings) {
+                chosenTemplate = chosenTemplate || userSettings.branding?.receiptTemplate || userSettings.branding?.invoiceTemplate || userSettings.branding?.defaultTemplate || 'classic';
+                chosenColor = chosenColor || userSettings.branding?.receiptColor || userSettings.branding?.invoiceColor || userSettings.branding?.primaryColor || '#1e40af';
+            }
+        } catch (err) {
+            console.warn('Failed to load settings when creating receipt:', err.message || err);
+            chosenTemplate = chosenTemplate || 'classic';
+            chosenColor = chosenColor || '#1e40af';
+        }
+
+        const receipt = await Receipt.create({
+            user: req.user.id,
+            invoice: invoiceId,
+            receiptNumber,  // Use frontend-generated number
+            receiptDate: new Date(),
+            paymentMethod: paymentMethod || "Cash",
+            paymentDate: paymentDate || new Date(),
+            transactionId: transactionId || "",
+            amountPaid: invoice.total,
+            currency: "USD",
+            billFrom: invoice.billFrom,
+            billTo: invoice.billTo,
+            items: invoice.items,
+            subTotal: invoice.subTotal,
+            taxTotal: invoice.taxTotal,
+            total: invoice.total,
+            notes: notes || invoice.notes || "",
+            templateId: chosenTemplate,
+            brandColor: chosenColor
         });
 
-      } catch (err) {
-        lastError = err;
+        res.status(201).json({
+            message: "Receipt generated successfully",
+            receipt
+        });
 
-        // If duplicate key on user+receiptNumber or receiptNumber, loop to get next sequence.
-        if (err && err.code === 11000 && (
-          (err.keyPattern && (err.keyPattern.receiptNumber || err.keyPattern.user)) ||
-          (err.message && err.message.includes('duplicate key'))
-        )) {
-          // continue to next attempt (get another sequence)
-          continue;
+    } catch (error) {
+        console.error("Generate receipt error:", error);
+        
+        // Handle duplicate key error
+        if (error.code === 11000) {
+            return res.status(400).json({ 
+                message: "Receipt number already exists. Please try again." 
+            });
         }
-        // Any other error -> rethrow to outer catch
-        throw err;
-      }
+        
+        res.status(500).json({ message: "Server error", error: error.message });
     }
-
-    if (!receiptDoc) {
-      console.error('Failed to create receipt after retries:', lastError);
-      return res.status(500).json({ message: "Failed to generate receipt. Please try again." });
-    }
-
-    // 6. Success
-    return res.status(201).json({
-      message: "Receipt generated successfully",
-      receipt: receiptDoc
-    });
-
-  } catch (error) {
-    console.error("Generate receipt error:", error);
-
-    if (error && error.code === 11000) {
-      return res.status(400).json({ message: "Duplicate receipt number generated. Please retry." });
-    }
-
-    return res.status(500).json({ message: "Server error", error: error.message });
-  }
 };
-
-
 
 // @desc    Get all receipts for logged-in user
 // @route   GET /api/receipts
@@ -659,3 +390,14 @@ exports.getReceiptStats = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
+// module.exports = {
+//     generateReceipt,
+//     getReceipts,
+//     getReceiptById,
+//     getReceiptByInvoiceId,
+//     updateReceipt,
+//     deleteReceipt,
+//     generateReceiptPdf,
+//     getReceiptStats,
+// };

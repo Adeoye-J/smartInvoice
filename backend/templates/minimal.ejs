@@ -335,6 +335,18 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
+    /* CSS variables driven by Settings.branding.primaryColor (or colors fallback) */
+    :root {
+      --brand: <%= (typeof brandColor !== 'undefined' && brandColor) ? brandColor : ((colors && colors.primary) ? colors.primary : '#64748b') %>;
+      --brand-dark: <%= (colors && colors.primaryDark) ? colors.primaryDark : '#475569' %>;
+      --brand-light: <%= (colors && colors.primaryLight) ? colors.primaryLight : '#cbd5e1' %>;
+      --brand-lighter: <%= (colors && colors.primaryLighter) ? colors.primaryLighter : '#e6eef8' %>;
+      --brand-pale: <%= (colors && colors.primaryPale) ? colors.primaryPale : '#f8fafc' %>;
+      --text: <%= (colors && colors.text) ? colors.text : '#0f172a' %>;
+      --text-light: <%= (colors && colors.textLight) ? colors.textLight : '#64748b' %>;
+      --border: <%= (colors && colors.border) ? colors.border : '#e2e8f0' %>;
+    }
+
     body { 
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       color: #0f172a;
@@ -393,7 +405,7 @@
     
     .divider-thick {
       height: 1px;
-      background: <%= colors.primaryDark %>;
+      background: var(--brand-dark);
     }
     
     .row {
@@ -479,7 +491,7 @@
       font-weight: 600;
       letter-spacing: 1px;
       color: #64748b;
-      border-bottom: 1px solid <%= colors.primaryDark %>;
+      border-bottom: 1px solid var(--brand-dark);
     }
     
     thead th.right { text-align: right; }
@@ -532,7 +544,7 @@
     }
     
     .total-final {
-      border-top: 1px solid <%= colors.primaryDark %>;
+      border-top: 1px solid var(--brand-dark);
       margin-top: 10px;
       padding-top: 12px;
       font-size: 14px;

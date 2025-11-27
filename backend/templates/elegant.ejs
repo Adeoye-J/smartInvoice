@@ -446,15 +446,30 @@
   <title>Invoice <%= invoice.invoiceNumber %></title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
+
+    :root {
+      --brand: <%= (typeof brandColor !== 'undefined' && brandColor) ? brandColor : ((colors && colors.primary) ? colors.primary : '#1d4ed8') %>;
+      --brand-dark: <%= (colors && colors.primaryDark) ? colors.primaryDark : '#1e3a8a' %>;
+      --brand-darker: <%= (colors && colors.primaryDarker) ? colors.primaryDarker : '#1e40af' %>;
+      --brand-light: <%= (colors && colors.primaryLight) ? colors.primaryLight : 'rgba(29,78,216,0.85)' %>;
+      --brand-lighter: <%= (colors && colors.primaryLighter) ? colors.primaryLighter : '#93c5fd' %>;
+      --brand-pale: <%= (colors && colors.primaryPale) ? colors.primaryPale : '#f8fafc' %>;
+      --gold: <%= (colors && colors.gold) ? colors.gold : '#f59e0b' %>;
+      --text: <%= (colors && colors.text) ? colors.text : '#1e293b' %>;
+      --text-medium: <%= (colors && colors.textMedium) ? colors.textMedium : '#64748b' %>;
+      --border: <%= (colors && colors.border) ? colors.border : '#e2e8f0' %>;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body { 
       font-family: 'Georgia', 'Times New Roman', serif;
-      color: #1e293b;
-      background: #f8fafc;
+      color: var(--text);
+      background: var(--brand-pale);
+      /* padding: 40px 20px; */
       padding: 20px;
-      font-size: 11px;
     }
-    
+
     .container { 
       max-width: 750px; 
       margin: 0 auto;
@@ -463,68 +478,68 @@
       border-radius: 6px;
       overflow: hidden;
     }
-    
+
     .header-bar {
-      background: linear-gradient(90deg, <%= colors.primaryDarker %> 0%, <%= colors.primary %> 100%);
+      background: linear-gradient(90deg, var(--brand-darker) 0%, var(--brand) 100%);
       height: 6px;
     }
-    
+
     .content {
       padding: 30px;
     }
-    
+
     .top-section {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       padding-bottom: 25px;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid var(--border);
       margin-bottom: 25px;
     }
-    
+
     .logo-area {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    
+
     .logo {
       width: 55px;
       height: 55px;
       object-fit: contain;
     }
-    
+
     .logo-text h1 {
       font-size: 20px;
-      color: <%= colors.primaryDarker %>;
+      color: var(--brand-darker);
       font-weight: 700;
       margin-bottom: 3px;
       font-style: italic;
     }
-    
+
     .logo-text .tagline {
       font-size: 9px;
-      color: #64748b;
+      color: var(--text-medium);
       font-style: italic;
       margin-bottom: 8px;
     }
-    
+
     .logo-text .company-details {
       font-size: 10px;
-      color: #64748b;
+      color: var(--text-medium);
       line-height: 1.5;
       font-family: 'Helvetica Neue', Arial, sans-serif;
     }
-    
+
     .invoice-box {
       text-align: right;
       padding: 15px 18px;
-      background: linear-gradient(135deg, <%= colors.primaryDarker %> 0%, <%= colors.primaryLight %> 100%);
+      background: linear-gradient(135deg, var(--brand-darker) 0%, var(--brand-light) 100%);
       border-radius: 6px;
       color: white;
       min-width: 160px;
     }
-    
+
     .invoice-label {
       font-size: 9px;
       text-transform: uppercase;
@@ -533,14 +548,14 @@
       margin-bottom: 4px;
       font-family: 'Helvetica Neue', Arial, sans-serif;
     }
-    
+
     .invoice-num {
       font-size: 18px;
       font-weight: 700;
       margin-bottom: 8px;
       letter-spacing: 0.5px;
     }
-    
+
     .status-pill {
       display: inline-block;
       padding: 4px 10px;
@@ -552,100 +567,100 @@
       font-weight: 600;
       font-family: 'Helvetica Neue', Arial, sans-serif;
     }
-    
+
     .parties {
       display: flex;
       gap: 30px;
       margin-bottom: 25px;
       padding: 18px;
-      background: #f8fafc;
+      background: var(--brand-pale);
       border-radius: 4px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
     }
-    
+
     .party {
       flex: 1;
     }
-    
+
     .party-header {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 10px;
     }
-    
+
     .party-icon {
       width: 4px;
       height: 20px;
-      background: #f59e0b;
+      background: var(--gold);
       border-radius: 2px;
     }
-    
+
     .party-title {
       font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 1.5px;
-      color: <%= colors.primaryDarker %>;
+      color: var(--brand-darker);
       font-weight: 700;
       font-family: 'Helvetica Neue', Arial, sans-serif;
     }
-    
+
     .party-name {
       font-size: 13px;
       font-weight: 700;
-      color: #0f172a;
+      color: var(--text);
       margin-bottom: 4px;
     }
-    
+
     .party-info {
       font-size: 10px;
-      color: #64748b;
+      color: var(--text-medium);
       line-height: 1.6;
       font-family: 'Helvetica Neue', Arial, sans-serif;
     }
-    
+
     .metadata {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 15px;
       margin-bottom: 25px;
     }
-    
+
     .meta-item {
       padding: 12px;
-      border-left: 2px solid <%= colors.primaryLighter %>;
+      border-left: 2px solid var(--brand-lighter);
       background: white;
     }
-    
+
     .meta-label {
       font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: #94a3b8;
+      color: var(--text-medium);
       margin-bottom: 4px;
       font-family: 'Helvetica Neue', Arial, sans-serif;
       font-weight: 600;
     }
-    
+
     .meta-value {
       font-size: 11px;
-      color: #0f172a;
+      color: var(--text);
       font-weight: 600;
       font-family: 'Helvetica Neue', Arial, sans-serif;
     }
-    
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin: 20px 0;
       font-family: 'Helvetica Neue', Arial, sans-serif;
     }
-    
+
     thead {
-      background: <%= colors.primaryDarker %>;
+      background: var(--brand-darker);
       color: white;
     }
-    
+
     thead th {
       padding: 10px 8px;
       text-align: left;
@@ -654,90 +669,90 @@
       font-weight: 700;
       letter-spacing: 0.5px;
     }
-    
+
     thead th.right { text-align: right; }
     thead th.center { text-align: center; }
-    
+
     tbody tr {
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid var(--border);
     }
-    
+
     tbody tr:last-child {
-      border-bottom: 1px solid <%= colors.primaryDark %>;
+      border-bottom: 1px solid var(--brand-dark);
     }
-    
+
     tbody td {
       padding: 10px 8px;
       font-size: 10px;
-      color: #0f172a;
+      color: var(--text);
     }
-    
+
     tbody td:first-child {
       font-weight: 600;
     }
-    
+
     tbody td.right { text-align: right; font-weight: 600; }
-    tbody td.center { text-align: center; color: #64748b; }
-    
+    tbody td.center { text-align: center; color: var(--text-medium); }
+
     .summary {
       display: flex;
       justify-content: flex-end;
       margin-top: 20px;
     }
-    
+
     .summary-box {
       width: 260px;
       padding: 15px;
-      background: #f8fafc;
+      background: var(--brand-pale);
       border-radius: 6px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
     }
-    
+
     .sum-row {
       display: flex;
       justify-content: space-between;
       padding: 6px 0;
       font-size: 10px;
-      color: #64748b;
+      color: var(--text-medium);
       font-family: 'Helvetica Neue', Arial, sans-serif;
     }
-    
+
     .sum-row span:last-child {
       font-weight: 600;
-      color: #0f172a;
+      color: var(--text);
     }
-    
+
     .sum-total {
-      border-top: 2px solid <%= colors.primaryDark %>;
+      border-top: 2px solid var(--brand-dark);
       margin-top: 10px;
       padding-top: 12px;
       font-size: 16px;
       font-weight: 700;
-      color: <%= colors.primaryDarker %>;
+      color: var(--brand-darker);
     }
-    
+
     .notes-area {
       margin-top: 30px;
       padding: 15px;
       background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-      border-left: 3px solid #f59e0b;
+      border-left: 3px solid var(--gold);
       border-radius: 4px;
     }
-    
+
     .notes-header {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 8px;
     }
-    
+
     .notes-icon {
       width: 3px;
       height: 14px;
-      background: #f59e0b;
+      background: var(--gold);
       border-radius: 2px;
     }
-    
+
     .notes-title {
       font-size: 9px;
       text-transform: uppercase;
@@ -746,21 +761,21 @@
       font-weight: 700;
       font-family: 'Helvetica Neue', Arial, sans-serif;
     }
-    
+
     .notes-content {
       font-size: 10px;
       color: #78350f;
       line-height: 1.6;
       font-family: 'Helvetica Neue', Arial, sans-serif;
     }
-    
+
     .footer {
       margin-top: 30px;
       padding-top: 15px;
-      border-top: 1px solid #e2e8f0;
+      border-top: 1px solid var(--border);
       text-align: center;
       font-size: 9px;
-      color: #94a3b8;
+      color: var(--text-medium);
       font-style: italic;
     }
   </style>

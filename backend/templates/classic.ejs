@@ -361,7 +361,14 @@
   <title>Invoice <%= invoice.invoiceNumber %></title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
+
+    /* CSS variables driven by Settings.branding.primaryColor (or colors fallback) */
+    :root {
+      --brand: <%= (typeof brandColor !== 'undefined' && brandColor) ? brandColor : ((colors && colors.primary) ? colors.primary : '#1e40af') %>;
+      --brand-dark: <%= (colors && colors.primaryDarker) ? colors.primaryDarker : '#0f172a' %>;
+      --brand-lighter: <%= (colors && colors.primaryLighter) ? colors.primaryLighter : '#f8fafc' %>;
+    }
+
     body { 
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #1e293b;
@@ -381,7 +388,7 @@
       justify-content: space-between;
       align-items: flex-start;
       padding-bottom: 20px;
-      border-bottom: 2px solid <%= colors.primary %>;
+      border-bottom: 2px solid var(--brand);
       margin-bottom: 25px;
     }
     
@@ -399,7 +406,7 @@
     
     .company-info h1 {
       font-size: 18px;
-      color: <%= colors.primaryDarker %>;
+      color: var(--brand-dark);
       font-weight: 700;
       margin-bottom: 4px;
     }
@@ -412,7 +419,7 @@
     
     .invoice-info {
       text-align: right;
-      background: <%= colors.primaryLighter %>;
+      background: var(--brand-lighter);
       padding: 12px 16px;
       border-radius: 6px;
       min-width: 180px;
@@ -421,7 +428,7 @@
     .invoice-info .label {
       font-size: 9px;
       text-transform: uppercase;
-      color: <%= colors.primaryDarker %>;
+      color: var(--brand-dark);
       font-weight: 600;
       letter-spacing: 1px;
     }
@@ -453,7 +460,7 @@
     .party-title {
       font-size: 9px;
       text-transform: uppercase;
-      color: <%= colors.primary %>;
+      color: var(--brand);
       font-weight: 700;
       letter-spacing: 1px;
       margin-bottom: 8px;
@@ -507,7 +514,7 @@
     }
     
     thead {
-      background: <%= colors.primaryDarker %>;
+      background: var(--brand-dark);
       color: white;
     }
     
@@ -558,26 +565,26 @@
     }
     
     .total-row.final {
-      border-top: 2px solid <%= colors.primary %>;
+      border-top: 2px solid var(--brand);
       margin-top: 8px;
       padding-top: 10px;
       font-size: 14px;
       font-weight: 700;
-      color: <%= colors.primaryDarker %>;
+      color: var(--brand-dark);
     }
     
     .notes {
       margin-top: 25px;
       padding: 12px 16px;
-      background: <%= colors.primaryLighter %>;
-      border-left: 3px solid <%= colors.primary %>;
+      background: var(--brand-lighter);
+      border-left: 3px solid var(--brand);
       border-radius: 3px;
     }
     
     .notes-title {
       font-size: 9px;
       text-transform: uppercase;
-      color: <%= colors.primaryDarker %>;
+      color: var(--brand-dark);
       font-weight: 700;
       letter-spacing: 1px;
       margin-bottom: 6px;

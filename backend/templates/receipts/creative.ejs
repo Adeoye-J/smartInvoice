@@ -1,0 +1,457 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Receipt <%= receipt.receiptNumber %></title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* CSS variables driven by Settings.branding.primaryColor (or colors fallback) */
+    :root {
+      --brand: <%= (typeof brandColor !== 'undefined' && brandColor) ? brandColor : ((colors && colors.primary) ? colors.primary : '#2563eb') %>;
+      --brand-dark: <%= (colors && colors.primaryDark) ? colors.primaryDark : '#1e40af' %>;
+      --brand-darker: <%= (colors && colors.primaryDarker) ? colors.primaryDarker : '#1e3a8a' %>;
+      --brand-light: <%= (colors && colors.primaryLight) ? colors.primaryLight : 'rgba(37,99,235,0.85)' %>;
+      --brand-lighter: <%= (colors && colors.primaryLighter) ? colors.primaryLighter : '#93c5fd' %>;
+      --brand-pale: <%= (colors && colors.primaryPale) ? colors.primaryPale : '#f1f5f9' %>;
+      --brand-accent: <%= (colors && colors.accent) ? colors.accent : ((colors && colors.primaryLight) ? colors.primaryLight : '#60a5fa') %>;
+      --accent-light: <%= (colors && colors.accentLight) ? colors.accentLight : '#93c5fd' %>;
+      --highlight: <%= (colors && colors.highlight) ? colors.highlight : '#fbbf24' %>;
+      --text: <%= (colors && colors.text) ? colors.text : '#0f172a' %>;
+      --text-medium: <%= (colors && colors.textMedium) ? colors.textMedium : '#475569' %>;
+      --text-light: <%= (colors && colors.textLight) ? colors.textLight : '#94a3b8' %>;
+      --bg: <%= (colors && colors.bg) ? colors.bg : '#f1f5f9' %>;
+      --border: <%= (colors && colors.border) ? colors.border : '#cbd5e1' %>;
+    }
+
+    body { 
+      font-family: 'Poppins', -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      padding: 20px;
+      font-size: 10px;
+    }
+
+    .container { 
+      max-width: 750px; 
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--brand-darker) 0%, var(--brand) 100%);
+      padding: 25px 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -30%;
+      right: -5%;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+
+    .business-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 50px;
+      height: 50px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 6px;
+      object-fit: contain;
+    }
+
+    .business-info h1 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .business-info p {
+      font-size: 9px;
+      opacity: 0.95;
+      line-height: 1.4;
+    }
+
+    .receipt-badge {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      padding: 15px 18px;
+      border-radius: 8px;
+      text-align: right;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .badge-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      opacity: 0.9;
+      font-weight: 600;
+    }
+
+    .badge-number {
+      font-size: 20px;
+      font-weight: 900;
+      margin: 4px 0;
+      letter-spacing: -0.5px;
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #22c55e;
+      border-radius: 12px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 6px;
+      color: white;
+    }
+
+    .main-body {
+      padding: 30px;
+    }
+
+    .info-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .info-card {
+      background: var(--brand-lighter);
+      padding: 12px;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      color: var(--brand-darker);
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .card-value {
+      font-size: 11px;
+      color: var(--brand-darker);
+      font-weight: 700;
+    }
+
+    .payer-section {
+      background: var(--bg);
+      padding: 18px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--highlight);
+    }
+
+    .payer-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .payer-icon {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .payer-title {
+      font-size: 9px;
+      text-transform: uppercase;
+      color: #64748b;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .payer-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .payer-details {
+      font-size: 10px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .payment-info {
+      background: #f0fdf4;
+      padding: 18px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #22c55e;
+    }
+
+    .payment-info-title {
+      font-size: 9px;
+      text-transform: uppercase;
+      color: #166534;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .payment-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 10px;
+      color: #166534;
+    }
+
+    .payment-row span:last-child {
+      font-weight: 700;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .items-table thead {
+      background: linear-gradient(135deg, var(--brand-darker) 0%, var(--brand) 100%);
+      color: white;
+    }
+
+    .items-table thead th {
+      padding: 12px 10px;
+      text-align: left;
+      font-size: 9px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .items-table thead th.right { text-align: right; }
+    .items-table thead th.center { text-align: center; }
+
+    .items-table tbody tr {
+      background: white;
+    }
+
+    .items-table tbody tr:nth-child(odd) {
+      background: #f8fafc;
+    }
+
+    .items-table tbody td {
+      padding: 12px 10px;
+      font-size: 10px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .items-table tbody td:first-child {
+      font-weight: 700;
+      color: var(--brand-dark);
+    }
+
+    .items-table tbody td.right { 
+      text-align: right; 
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .items-table tbody td.center { 
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .totals-area {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .totals-container {
+      width: 280px;
+      background: linear-gradient(135deg, var(--bg) 0%, white 100%);
+      padding: 20px;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+    }
+
+    .total-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      font-size: 10px;
+      color: var(--text-medium);
+      font-weight: 600;
+    }
+
+    .total-line span:last-child {
+      color: var(--text);
+    }
+
+    .total-grand {
+      border-top: 2px solid var(--brand);
+      margin-top: 10px;
+      padding-top: 12px;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--brand-darker);
+    }
+
+    .footer-bar {
+      height: 8px;
+      background: linear-gradient(90deg, var(--brand-darker) 0%, var(--brand) 50%, var(--brand-light) 100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <div class="hero-content">
+        <div class="business-section">
+          <% if (businessLogo) { %>
+            <img src="<%= businessLogo %>" alt="Logo" class="logo" />
+          <% } %>
+          <div class="business-info">
+            <h1><%= receipt.billFrom?.businessName || 'Your Business' %></h1>
+            <p>
+              <%= receipt.billFrom?.address || '' %><br/>
+              <%= receipt.billFrom?.email || '' %>
+            </p>
+          </div>
+        </div>
+        
+        <div class="receipt-badge">
+          <div class="badge-label">Receipt</div>
+          <div class="badge-number">#<%= receipt.receiptNumber %></div>
+          <div class="badge-status">PAID</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-body">
+      <div class="info-cards">
+        <div class="info-card">
+          <div class="card-label">Date</div>
+          <div class="card-value"><%= new Date(receipt.receiptDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></div>
+        </div>
+        
+        <div class="info-card">
+          <div class="card-label">Payment Date</div>
+          <div class="card-value"><%= new Date(receipt.paymentDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></div>
+        </div>
+        
+        <div class="info-card">
+          <div class="card-label">Method</div>
+          <div class="card-value"><%= receipt.paymentMethod || 'Card' %></div>
+        </div>
+      </div>
+
+      <div class="payer-section">
+        <div class="payer-header">
+          <div class="payer-icon"><%= (receipt.billTo?.clientName || 'C').charAt(0).toUpperCase() %></div>
+          <div class="payer-title">Received From</div>
+        </div>
+        <div class="payer-name"><%= receipt.billTo?.clientName || '' %></div>
+        <div class="payer-details">
+          <%= receipt.billTo?.address || '' %><br/>
+          <%= receipt.billTo?.email || '' %><br/>
+          <%= receipt.billTo?.phone || '' %>
+        </div>
+      </div>
+
+      <div class="payment-info">
+        <div class="payment-info-title">Payment Details</div>
+        <div class="payment-row">
+          <span>Transaction ID</span>
+          <span><%= receipt.transactionId || 'N/A' %></span>
+        </div>
+        <div class="payment-row">
+          <span>Payment Method</span>
+          <span><%= receipt.paymentMethod || 'Card' %></span>
+        </div>
+      </div>
+
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th class="center">Qty</th>
+            <th class="right">Rate</th>
+            <th class="right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% (receipt.items || []).forEach(function(item){ %>
+            <tr>
+              <td><%= item.name %></td>
+              <td class="center"><%= item.quantity %></td>
+              <td class="right">$<%= Number(item.unitPrice || 0).toFixed(2) %></td>
+              <td class="right">$<%= Number(item.total || 0).toFixed(2) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <div class="totals-area">
+        <div class="totals-container">
+          <div class="total-line">
+            <span>Subtotal</span>
+            <span>$<%= Number(receipt.subTotal||0).toFixed(2) %></span>
+          </div>
+          <div class="total-line">
+            <span>Tax</span>
+            <span>$<%= Number(receipt.taxTotal||0).toFixed(2) %></span>
+          </div>
+          <div class="total-line total-grand">
+            <span>Amount Paid</span>
+            <span>$<%= Number(receipt.total||0).toFixed(2) %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bar"></div>
+  </div>
+</body>
+</html>

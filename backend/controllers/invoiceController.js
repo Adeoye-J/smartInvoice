@@ -1,4 +1,5 @@
 const Invoice = require("../models/Invoice");
+const Subscription = require("../models/Subscription");
 const { generatePdfBufferFromInvoice } = require('../utils/pdfGenerator');
 
 // @desc    Create new invoice
@@ -29,6 +30,47 @@ exports.createInvoice = async (req, res) => {
 
         const total = subTotal + taxTotal;
 
+        // Server-side quota check and increment
+        try {
+            const subscription = await Subscription.findOne({ user: req.user.id });
+            if (subscription) {
+                const now = new Date();
+                if (!subscription.currentPeriodEnd || (subscription.currentPeriodEnd && now > subscription.currentPeriodEnd)) {
+                    subscription.usage = { invoicesCreated: 0, receiptsGenerated: 0, emailsSent: 0 };
+                    subscription.currentPeriodStart = now;
+                    const periodEnd = new Date();
+                    periodEnd.setMonth(periodEnd.getMonth() + (subscription.billingCycle === 'yearly' ? 12 : 1));
+                    subscription.currentPeriodEnd = periodEnd;
+                }
+
+                const limit = subscription.limits?.invoicesPerMonth ?? -1;
+                if (limit !== -1 && subscription.usage.invoicesCreated >= limit) {
+                    return res.status(400).json({ message: `Monthly invoice limit reached (${limit}).` });
+                }
+
+                // increment now (will save after invoice saved)
+                subscription.usage.invoicesCreated += 1;
+                await subscription.save();
+            }
+        } catch (err) {
+            console.warn('Subscription check failed during invoice creation:', err.message || err);
+        }
+
+        // Determine template/color defaults from user Settings if not provided
+        let chosenTemplate = templateId || null;
+        let chosenColor = null;
+        try {
+            const Settings = require('../models/Settings');
+            const userSettings = await Settings.findOne({ user: req.user.id }).lean();
+            if (userSettings) {
+                chosenTemplate = chosenTemplate || userSettings.branding?.invoiceTemplate || userSettings.branding?.defaultTemplate || 'classic';
+                chosenColor = userSettings.branding?.invoiceColor || userSettings.branding?.primaryColor || null;
+            }
+        } catch (err) {
+            console.warn('Failed to load settings when creating invoice:', err.message || err);
+            chosenTemplate = chosenTemplate || templateId || 'classic';
+        }
+
         const invoice = new Invoice({
             user,
             invoiceNumber,
@@ -39,7 +81,8 @@ exports.createInvoice = async (req, res) => {
             items,
             notes,
             paymentTerms,
-            templateId,
+            templateId: chosenTemplate,
+            brandColor: chosenColor,
             subTotal,
             taxTotal,
             total,

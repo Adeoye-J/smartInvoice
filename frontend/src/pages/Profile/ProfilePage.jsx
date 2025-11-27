@@ -1,23 +1,366 @@
-import React, {useState, useEffect} from 'react'
-import { useAuth } from '../../context/AuthContext'
-import { Loader2, User, Mail, Building, Phone, MapPin, Upload } from 'lucide-react'
-import axiosInstance from '../../utils/axiosInstance'
-import { API_PATHS } from '../../utils/apiPaths'
-import toast from 'react-hot-toast'
-import InputField from '../../components/ui/InputField'
-import TextareaField from '../../components/ui/TextareaField'
+// import React, {useState, useEffect} from 'react'
+// import { useAuth } from '../../context/AuthContext'
+// import { Loader2, User, Mail, Building, Phone, MapPin, Upload } from 'lucide-react'
+// import axiosInstance from '../../utils/axiosInstance'
+// import { API_PATHS } from '../../utils/apiPaths'
+// import toast from 'react-hot-toast'
+// import InputField from '../../components/ui/InputField'
+// import TextareaField from '../../components/ui/TextareaField'
+
+// const ProfilePage = () => {
+
+//     const { isAuthenticated, user, loading, updateUser } = useAuth();
+//     const [isUpdating, setIsUpdating] = useState(false);
+//     const [profileData, setProfileData] = useState({
+//         name: '',
+//         businessName: '',
+//         phone: '',
+//         address: '',
+//     });
+
+//     // Profile picture states
+//     const [profilePicturePreview, setProfilePicturePreview] = useState(null);
+//     const [profilePictureFile, setProfilePictureFile] = useState(null);
+//     const [uploadingProfile, setUploadingProfile] = useState(false);
+    
+//     // Business logo states
+//     const [businessLogoPreview, setBusinessLogoPreview] = useState(null);
+//     const [businessLogoFile, setBusinessLogoFile] = useState(null);
+//     const [uploadingLogo, setUploadingLogo] = useState(false);
+
+//     useEffect(() => {
+//         if (user) {
+//             setProfileData({
+//                 name: user.name || '',
+//                 businessName: user.businessName || '',
+//                 phone: user.phone || '',
+//                 address: user.address || '',
+//             });
+//             setProfilePicturePreview(user.profilePicture || null);
+//             setBusinessLogoPreview(user.businessLogo || null);
+//         }
+//     }, [user]);
+
+//     useEffect(() => {
+//         if (user?.logo) {
+//             setLogoPreview(user.logo);
+//         }
+//     }, [user]);
+
+//     const handleProfilePictureChange = (e) => {
+//         const file = e.target.files[0];
+//         if (file) {
+//             setProfilePictureFile(file);
+//             setProfilePicturePreview(URL.createObjectURL(file));
+//         }
+//     };
+
+//     // Handle business logo selection
+//     const handleBusinessLogoChange = (e) => {
+//         const file = e.target.files[0];
+//         if (file) {
+//             setBusinessLogoFile(file);
+//             setBusinessLogoPreview(URL.createObjectURL(file));
+//         }
+//     };
+
+//     // Upload profile picture
+//     const handleProfilePictureUpload = async () => {
+//         if (!profilePictureFile) return;
+        
+//         setUploadingProfile(true);
+//         const formData = new FormData();
+//         formData.append('profilePicture', profilePictureFile);
+        
+//         try {
+//             const response = await axiosInstance.post(
+//                 API_PATHS.AUTH.UPLOAD_PROFILE_PICTURE, 
+//                 formData,
+//                 { headers: { 'Content-Type': 'multipart/form-data' } }
+//             );
+//             updateUser({ ...user, profilePicture: response.data.profilePicture });
+//             setProfilePictureFile(null);
+//             toast.success("Profile picture uploaded successfully");
+//         } catch (error) {
+//             toast.error(error.message);
+//             console.error(error);
+//         } finally {
+//             setUploadingProfile(false);
+//         }
+//     };
+
+//     // Upload business logo
+//     const handleBusinessLogoUpload = async () => {
+//         if (!businessLogoFile) return;
+        
+//         setUploadingLogo(true);
+//         const formData = new FormData();
+//         formData.append('businessLogo', businessLogoFile);
+        
+//         try {
+//             const response = await axiosInstance.post(
+//                 API_PATHS.AUTH.UPLOAD_BUSINESS_LOGO, 
+//                 formData,
+//                 { headers: { 'Content-Type': 'multipart/form-data' } }
+//             );
+//             updateUser({ ...user, businessLogo: response.data.businessLogo });
+//             setBusinessLogoFile(null);
+//             toast.success("Business logo uploaded successfully");
+//         } catch (error) {
+//             toast.error("Business logo upload failed");
+//             console.error(error);
+//         } finally {
+//             setUploadingLogo(false);
+//         }
+//     };
+
+//     const handleInputChange = (e) => {
+//         const { name, value } = e.target;
+//         setProfileData((prevData) => ({
+//             ...prevData,
+//             [name]: value,
+//         }));
+//     };
+
+//     const handleUpdateProfile = async (e) => {
+//         e.preventDefault();
+//         setIsUpdating(true);
+//         try {
+//             const response = await axiosInstance.put(API_PATHS.AUTH.UPDATE_PROFILE, profileData);
+//             updateUser(response.data);
+//             toast.success("Profile updated successfully");
+//         } catch (error) {
+//             console.error("Profile update failed:", error);
+//             toast.error("Failed to update profile");
+//         } finally {
+//             setIsUpdating(false);
+//         }
+//     };
+
+//     if (loading) {
+//         return (
+//             <div className="flex items-center justify-center h-64">
+//                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+//             </div>
+//         )
+//     };
+
+//     return (
+//         <div className="bg-white sm:border sm:border-slate-200 sm:rounded-lg sm:shadow-sm overflow-hidden sm:p-6 sm:max-w-4xl sm:mx-auto sm:my-8">
+//             <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
+//                 <h3 className="text-lg font-semibold text-slate-900">My Profile</h3>
+//             </div>
+
+//             <form action="" onSubmit={handleUpdateProfile}>
+//                 <div className="p-6 space-y-6">
+
+//                     {/* Profile Picture Section */}
+//                     <div className="pt-6 border-t border-slate-200 space-y-4">
+//                         <h4 className="text-lg font-medium text-slate-900">Profile Picture</h4>
+//                         <p className="text-sm text-slate-500">Your personal avatar displayed in the header.</p>
+                        
+//                         <div className="flex items-center gap-6">
+//                             {/* Profile Picture Preview */}
+//                             <div className="w-24 h-24 border-2 border-slate-200 rounded-full overflow-hidden bg-slate-50 flex items-center justify-center">
+//                                 {profilePicturePreview ? (
+//                                     <img src={profilePicturePreview} alt="Profile" className="w-full h-full object-cover" />
+//                                 ) : (
+//                                     <User className="w-10 h-10 text-slate-400" />
+//                                 )}
+//                             </div>
+                            
+//                             {/* Upload Controls */}
+//                             <div>
+//                                 <input
+//                                     type="file"
+//                                     id="profile-picture-upload"
+//                                     accept="image/*"
+//                                     onChange={handleProfilePictureChange}
+//                                     className="hidden"
+//                                 />
+//                                 <label
+//                                     htmlFor="profile-picture-upload"
+//                                     className="cursor-pointer inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50"
+//                                 >
+//                                     <Upload className="w-4 h-4 mr-2" />
+//                                     Choose Picture
+//                                 </label>
+                                
+//                                 {profilePictureFile && (
+//                                     <button
+//                                         type="button"
+//                                         onClick={handleProfilePictureUpload}
+//                                         disabled={uploadingProfile}
+//                                         className="ml-3 px-4 py-2 bg-blue-900 text-white rounded-lg text-sm font-medium hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center"
+//                                     >
+//                                         {uploadingProfile ? (
+//                                             <>
+//                                                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+//                                                 Uploading...
+//                                             </>
+//                                         ) : (
+//                                             'Upload'
+//                                         )}
+//                                     </button>
+//                                 )}
+//                             </div>
+//                         </div>
+//                     </div>
+
+//                     <div>
+//                         <label htmlFor="" className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
+//                         <div className="relative">
+//                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+//                                 <Mail className='w-5 h-5 text-slate-400' />
+//                             </div>
+//                             <input type="email" readOnly value={user?.email || ""} className='w-full h-10 pl-10 pr-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 disabled:cursor-not-allowed' disabled />
+//                         </div>
+//                     </div>
+
+//                     <InputField
+//                         label="Full Name"
+//                         name="name"
+//                         type="text"
+//                         value={profileData.name}
+//                         onChange={handleInputChange}
+//                         icon={User}
+//                         placeholder="Enter Your Full Name"
+//                     />
+
+//                     <div className="pt-6 border-t border-slate-200 space-y-4">
+//                         {/* <h4 className="text-lg font-medium text-slate-900">Business Information</h4>
+//                         <p className="text-sm text-slate-500">This will be used to pre-fill the "Bill From" section of your invoices.</p> */}
+
+//                         {/* Business Logo */}
+//                         <div className="mb-6">
+//                             <label className="block text-sm font-medium text-slate-700 mb-3">Business Logo</label>
+//                             <p className="text-xs text-slate-500 mb-3">This logo will appear on your invoices and receipts.</p>
+                            
+//                             <div className="flex items-center gap-6">
+//                                 {/* Business Logo Preview */}
+//                                 <div className="w-24 h-24 border-2 border-slate-200 rounded-lg overflow-hidden bg-slate-50 flex items-center justify-center">
+//                                     {businessLogoPreview ? (
+//                                         <img src={businessLogoPreview} alt="Business Logo" className="w-full h-full object-cover" />
+//                                     ) : (
+//                                         <Building className="w-10 h-10 text-slate-400" />
+//                                     )}
+//                                 </div>
+                                
+//                                 {/* Upload Controls */}
+//                                 <div>
+//                                     <input
+//                                         type="file"
+//                                         id="business-logo-upload"
+//                                         accept="image/*"
+//                                         onChange={handleBusinessLogoChange}
+//                                         className="hidden"
+//                                     />
+//                                     <label
+//                                         htmlFor="business-logo-upload"
+//                                         className="cursor-pointer inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50"
+//                                     >
+//                                         <Upload className="w-4 h-4 mr-2" />
+//                                         Choose Logo
+//                                     </label>
+                                    
+//                                     {businessLogoFile && (
+//                                         <button
+//                                             type="button"
+//                                             onClick={handleBusinessLogoUpload}
+//                                             disabled={uploadingLogo}
+//                                             className="ml-3 px-4 py-2 bg-blue-900 text-white rounded-lg text-sm font-medium hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center"
+//                                         >
+//                                             {uploadingLogo ? (
+//                                                 <>
+//                                                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+//                                                     Uploading...
+//                                                 </>
+//                                             ) : (
+//                                                 'Upload'
+//                                             )}
+//                                         </button>
+//                                     )}
+//                                 </div>
+//                             </div>
+//                         </div>
+
+//                         <div className="space-y-4">
+//                             <InputField
+//                                 label="Business Name"
+//                                 name="businessName"
+//                                 type="text"
+//                                 value={profileData.businessName}
+//                                 onChange={handleInputChange}
+//                                 icon={Building}
+//                                 placeholder="My Company LLC"
+//                             />
+//                             <TextareaField
+//                                 label="Business Address"
+//                                 name="address"
+//                                 value={profileData.address}
+//                                 onChange={handleInputChange}
+//                                 icon={MapPin}
+//                                 placeholder="1234 Main St, City, State, ZIP"
+//                             />
+//                             <InputField
+//                                 label="Phone Number"
+//                                 name="phone"
+//                                 type="tel "
+//                                 value={profileData.phone}
+//                                 onChange={handleInputChange}
+//                                 icon={Phone}
+//                                 placeholder="+(1) 234 567 8900"
+//                             />
+//                         </div>
+//                     </div>
+//                 </div>
+
+//                 <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+//                     <button className="inline-flex items-center justify-center px-4 py-2 h-10 bg-blue-900 hover:bg-blue-800 text-white font-medium text-sm rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled={isUpdating}>
+//                         {isUpdating ? (
+//                             <>
+//                                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+//                                 Updating...
+//                             </>
+//                         ) : (
+//                             "Update Profile"
+//                         )}
+//                     </button>
+//                 </div>
+//             </form>
+//         </div>
+//     );
+// };
+
+// export default ProfilePage
+
+
+// pages/profile/Profile.jsx
+
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import {
+    Loader2,
+    User,
+    Mail,
+    Building,
+    Phone,
+    MapPin,
+    Upload,
+    Edit2,
+    X,
+    Check
+} from 'lucide-react';
+import axiosInstance from '../../utils/axiosInstance';
+import { API_PATHS } from '../../utils/apiPaths';
+import toast from 'react-hot-toast';
+import Button from '../../components/ui/Button';
 
 const ProfilePage = () => {
-
-    const { isAuthenticated, user, loading, updateUser } = useAuth();
+    const { user, loading: authLoading, updateUser } = useAuth();
+    const [isEditing, setIsEditing] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
-    const [profileData, setProfileData] = useState({
-        name: '',
-        businessName: '',
-        phone: '',
-        address: '',
-    });
-
+    
     // Profile picture states
     const [profilePicturePreview, setProfilePicturePreview] = useState(null);
     const [profilePictureFile, setProfilePictureFile] = useState(null);
@@ -28,24 +371,33 @@ const ProfilePage = () => {
     const [businessLogoFile, setBusinessLogoFile] = useState(null);
     const [uploadingLogo, setUploadingLogo] = useState(false);
 
+    const [profileData, setProfileData] = useState({
+        name: '',
+        businessName: '',
+        phone: '',
+        address: ''
+    });
+
     useEffect(() => {
         if (user) {
             setProfileData({
                 name: user.name || '',
                 businessName: user.businessName || '',
                 phone: user.phone || '',
-                address: user.address || '',
+                address: user.address || ''
             });
             setProfilePicturePreview(user.profilePicture || null);
             setBusinessLogoPreview(user.businessLogo || null);
         }
     }, [user]);
 
-    useEffect(() => {
-        if (user?.logo) {
-            setLogoPreview(user.logo);
-        }
-    }, [user]);
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setProfileData((prevData) => ({
+            ...prevData,
+            [name]: value
+        }));
+    };
 
     const handleProfilePictureChange = (e) => {
         const file = e.target.files[0];
@@ -55,7 +407,6 @@ const ProfilePage = () => {
         }
     };
 
-    // Handle business logo selection
     const handleBusinessLogoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -64,272 +415,335 @@ const ProfilePage = () => {
         }
     };
 
-    // Upload profile picture
     const handleProfilePictureUpload = async () => {
         if (!profilePictureFile) return;
-        
+
         setUploadingProfile(true);
         const formData = new FormData();
         formData.append('profilePicture', profilePictureFile);
-        
+
         try {
             const response = await axiosInstance.post(
-                API_PATHS.AUTH.UPLOAD_PROFILE_PICTURE, 
+                API_PATHS.AUTH.UPLOAD_PROFILE_PICTURE,
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             );
             updateUser({ ...user, profilePicture: response.data.profilePicture });
             setProfilePictureFile(null);
-            toast.success("Profile picture uploaded successfully");
+            toast.success('Profile picture uploaded successfully');
         } catch (error) {
-            toast.error(error.message);
+            toast.error('Profile picture upload failed');
             console.error(error);
         } finally {
             setUploadingProfile(false);
         }
     };
 
-    // Upload business logo
     const handleBusinessLogoUpload = async () => {
         if (!businessLogoFile) return;
-        
+
         setUploadingLogo(true);
         const formData = new FormData();
         formData.append('businessLogo', businessLogoFile);
-        
+
         try {
             const response = await axiosInstance.post(
-                API_PATHS.AUTH.UPLOAD_BUSINESS_LOGO, 
+                API_PATHS.AUTH.UPLOAD_BUSINESS_LOGO,
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             );
             updateUser({ ...user, businessLogo: response.data.businessLogo });
             setBusinessLogoFile(null);
-            toast.success("Business logo uploaded successfully");
+            toast.success('Business logo uploaded successfully');
         } catch (error) {
-            toast.error("Business logo upload failed");
+            toast.error('Business logo upload failed');
             console.error(error);
         } finally {
             setUploadingLogo(false);
         }
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setProfileData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
-
-    const handleUpdateProfile = async (e) => {
-        e.preventDefault();
+    const handleUpdateProfile = async () => {
         setIsUpdating(true);
         try {
             const response = await axiosInstance.put(API_PATHS.AUTH.UPDATE_PROFILE, profileData);
             updateUser(response.data);
-            toast.success("Profile updated successfully");
+            setIsEditing(false);
+            toast.success('Profile updated successfully');
         } catch (error) {
-            console.error("Profile update failed:", error);
-            toast.error("Failed to update profile");
+            console.error('Profile update failed:', error);
+            toast.error('Failed to update profile');
         } finally {
             setIsUpdating(false);
         }
     };
 
-    if (loading) {
+    const handleCancel = () => {
+        setProfileData({
+            name: user.name || '',
+            businessName: user.businessName || '',
+            phone: user.phone || '',
+            address: user.address || ''
+        });
+        setIsEditing(false);
+    };
+
+    if (authLoading) {
         return (
             <div className="flex items-center justify-center h-64">
                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
             </div>
-        )
-    };
+        );
+    }
 
     return (
-        <div className="bg-white sm:border sm:border-slate-200 sm:rounded-lg sm:shadow-sm overflow-hidden sm:p-6 sm:max-w-4xl sm:mx-auto sm:my-8">
-            <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
-                <h3 className="text-lg font-semibold text-slate-900">My Profile</h3>
+        <div className="max-w-4xl mx-auto space-y-6">
+            {/* Header */}
+            <div className="flex justify-between items-center">
+                <div>
+                    <h1 className="text-2xl font-bold text-slate-900">Profile</h1>
+                    <p className="text-sm text-slate-600 mt-1">
+                        Manage your personal and business information
+                    </p>
+                </div>
+                {!isEditing ? (
+                    <Button variant="secondary" onClick={() => setIsEditing(true)} icon={Edit2}>
+                        Edit Profile
+                    </Button>
+                ) : (
+                    <div className="flex gap-2">
+                        <Button variant="secondary" onClick={handleCancel} icon={X}>
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={handleUpdateProfile}
+                            isLoading={isUpdating}
+                            icon={Check}
+                        >
+                            Save Changes
+                        </Button>
+                    </div>
+                )}
             </div>
 
-            <form action="" onSubmit={handleUpdateProfile}>
-                <div className="p-6 space-y-6">
-
-                    {/* Profile Picture Section */}
-                    <div className="pt-6 border-t border-slate-200 space-y-4">
-                        <h4 className="text-lg font-medium text-slate-900">Profile Picture</h4>
-                        <p className="text-sm text-slate-500">Your personal avatar displayed in the header.</p>
-                        
-                        <div className="flex items-center gap-6">
-                            {/* Profile Picture Preview */}
-                            <div className="w-24 h-24 border-2 border-slate-200 rounded-full overflow-hidden bg-slate-50 flex items-center justify-center">
+            {/* Profile Card */}
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                {/* Profile Picture Section */}
+                <div className="relative h-32 bg-linear-to-r from-blue-600 to-purple-600">
+                    <div className="absolute -bottom-16 left-8">
+                        <div className="relative">
+                            <div className="w-32 h-32 rounded-full border-4 border-white bg-slate-100 overflow-hidden">
                                 {profilePicturePreview ? (
-                                    <img src={profilePicturePreview} alt="Profile" className="w-full h-full object-cover" />
+                                    <img
+                                        src={profilePicturePreview}
+                                        alt="Profile"
+                                        className="w-full h-full object-cover"
+                                    />
                                 ) : (
-                                    <User className="w-10 h-10 text-slate-400" />
+                                    <div className="w-full h-full flex items-center justify-center bg-slate-200">
+                                        <User className="w-16 h-16 text-slate-400" />
+                                    </div>
                                 )}
                             </div>
-                            
-                            {/* Upload Controls */}
-                            <div>
-                                <input
-                                    type="file"
-                                    id="profile-picture-upload"
-                                    accept="image/*"
-                                    onChange={handleProfilePictureChange}
-                                    className="hidden"
-                                />
+                            {isEditing && (
                                 <label
                                     htmlFor="profile-picture-upload"
-                                    className="cursor-pointer inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50"
+                                    className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 transition"
                                 >
-                                    <Upload className="w-4 h-4 mr-2" />
-                                    Choose Picture
+                                    <Upload className="w-5 h-5 text-white" />
+                                    <input
+                                        type="file"
+                                        id="profile-picture-upload"
+                                        accept="image/*"
+                                        onChange={handleProfilePictureChange}
+                                        className="hidden"
+                                    />
                                 </label>
-                                
-                                {profilePictureFile && (
-                                    <button
-                                        type="button"
-                                        onClick={handleProfilePictureUpload}
-                                        disabled={uploadingProfile}
-                                        className="ml-3 px-4 py-2 bg-blue-900 text-white rounded-lg text-sm font-medium hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center"
-                                    >
-                                        {uploadingProfile ? (
-                                            <>
-                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                                Uploading...
-                                            </>
+                            )}
+                        </div>
+                        {profilePictureFile && (
+                            <Button
+                                size="small"
+                                className="mt-2"
+                                onClick={handleProfilePictureUpload}
+                                isLoading={uploadingProfile}
+                            >
+                                Upload
+                            </Button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Profile Info */}
+                <div className="pt-20 px-8 pb-8">
+                    <div className="space-y-6">
+                        {/* Personal Information */}
+                        <div>
+                            <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                                Personal Information
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                                        <User className="w-4 h-4 inline mr-2" />
+                                        Full Name
+                                    </label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={profileData.name}
+                                            onChange={handleInputChange}
+                                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    ) : (
+                                        <p className="text-slate-900 font-medium">{user?.name || 'N/A'}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                                        <Mail className="w-4 h-4 inline mr-2" />
+                                        Email Address
+                                    </label>
+                                    <p className="text-slate-500 text-sm bg-slate-50 px-4 py-2 rounded-lg">
+                                        {user?.email || 'N/A'}
+                                    </p>
+                                    <p className="text-xs text-slate-400 mt-1">
+                                        Email cannot be changed
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Business Information */}
+                        <div className="pt-6 border-t border-slate-200">
+                            <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                                Business Information
+                            </h3>
+
+                            {/* Business Logo */}
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-slate-700 mb-3">
+                                    Business Logo
+                                </label>
+                                <div className="flex items-center gap-6">
+                                    <div className="w-24 h-24 border-2 border-slate-200 rounded-lg overflow-hidden bg-slate-50 flex items-center justify-center">
+                                        {businessLogoPreview ? (
+                                            <img
+                                                src={businessLogoPreview}
+                                                alt="Business Logo"
+                                                className="w-full h-full object-cover"
+                                            />
                                         ) : (
-                                            'Upload'
+                                            <Building className="w-10 h-10 text-slate-400" />
                                         )}
-                                    </button>
+                                    </div>
+
+                                    {isEditing && (
+                                        <div>
+                                            <input
+                                                type="file"
+                                                id="business-logo-upload"
+                                                accept="image/*"
+                                                onChange={handleBusinessLogoChange}
+                                                className="hidden"
+                                            />
+                                            <label
+                                                htmlFor="business-logo-upload"
+                                                className="cursor-pointer inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50"
+                                            >
+                                                <Upload className="w-4 h-4 mr-2" />
+                                                Choose Logo
+                                            </label>
+
+                                            {businessLogoFile && (
+                                                <button
+                                                    onClick={handleBusinessLogoUpload}
+                                                    disabled={uploadingLogo}
+                                                    className="ml-3 px-4 py-2 bg-blue-900 text-white rounded-lg text-sm font-medium hover:bg-blue-800 disabled:opacity-50"
+                                                >
+                                                    {uploadingLogo ? (
+                                                        <>
+                                                            <Loader2 className="w-4 h-4 inline mr-2 animate-spin" />
+                                                            Uploading...
+                                                        </>
+                                                    ) : (
+                                                        'Upload'
+                                                    )}
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                                        <Building className="w-4 h-4 inline mr-2" />
+                                        Business Name
+                                    </label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            name="businessName"
+                                            value={profileData.businessName}
+                                            onChange={handleInputChange}
+                                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    ) : (
+                                        <p className="text-slate-900 font-medium">
+                                            {user?.businessName || 'Not set'}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                                        <Phone className="w-4 h-4 inline mr-2" />
+                                        Phone Number
+                                    </label>
+                                    {isEditing ? (
+                                        <input
+                                            type="tel"
+                                            name="phone"
+                                            value={profileData.phone}
+                                            onChange={handleInputChange}
+                                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    ) : (
+                                        <p className="text-slate-900 font-medium">
+                                            {user?.phone || 'Not set'}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                    <MapPin className="w-4 h-4 inline mr-2" />
+                                    Business Address
+                                </label>
+                                {isEditing ? (
+                                    <textarea
+                                        name="address"
+                                        value={profileData.address}
+                                        onChange={handleInputChange}
+                                        rows={3}
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                ) : (
+                                    <p className="text-slate-900">{user?.address || 'Not set'}</p>
                                 )}
                             </div>
                         </div>
                     </div>
-
-                    <div>
-                        <label htmlFor="" className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Mail className='w-5 h-5 text-slate-400' />
-                            </div>
-                            <input type="email" readOnly value={user?.email || ""} className='w-full h-10 pl-10 pr-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 disabled:cursor-not-allowed' disabled />
-                        </div>
-                    </div>
-
-                    <InputField
-                        label="Full Name"
-                        name="name"
-                        type="text"
-                        value={profileData.name}
-                        onChange={handleInputChange}
-                        icon={User}
-                        placeholder="Enter Your Full Name"
-                    />
-
-                    <div className="pt-6 border-t border-slate-200 space-y-4">
-                        {/* <h4 className="text-lg font-medium text-slate-900">Business Information</h4>
-                        <p className="text-sm text-slate-500">This will be used to pre-fill the "Bill From" section of your invoices.</p> */}
-
-                        {/* Business Logo */}
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-slate-700 mb-3">Business Logo</label>
-                            <p className="text-xs text-slate-500 mb-3">This logo will appear on your invoices and receipts.</p>
-                            
-                            <div className="flex items-center gap-6">
-                                {/* Business Logo Preview */}
-                                <div className="w-24 h-24 border-2 border-slate-200 rounded-lg overflow-hidden bg-slate-50 flex items-center justify-center">
-                                    {businessLogoPreview ? (
-                                        <img src={businessLogoPreview} alt="Business Logo" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <Building className="w-10 h-10 text-slate-400" />
-                                    )}
-                                </div>
-                                
-                                {/* Upload Controls */}
-                                <div>
-                                    <input
-                                        type="file"
-                                        id="business-logo-upload"
-                                        accept="image/*"
-                                        onChange={handleBusinessLogoChange}
-                                        className="hidden"
-                                    />
-                                    <label
-                                        htmlFor="business-logo-upload"
-                                        className="cursor-pointer inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50"
-                                    >
-                                        <Upload className="w-4 h-4 mr-2" />
-                                        Choose Logo
-                                    </label>
-                                    
-                                    {businessLogoFile && (
-                                        <button
-                                            type="button"
-                                            onClick={handleBusinessLogoUpload}
-                                            disabled={uploadingLogo}
-                                            className="ml-3 px-4 py-2 bg-blue-900 text-white rounded-lg text-sm font-medium hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center"
-                                        >
-                                            {uploadingLogo ? (
-                                                <>
-                                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                                    Uploading...
-                                                </>
-                                            ) : (
-                                                'Upload'
-                                            )}
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <InputField
-                                label="Business Name"
-                                name="businessName"
-                                type="text"
-                                value={profileData.businessName}
-                                onChange={handleInputChange}
-                                icon={Building}
-                                placeholder="My Company LLC"
-                            />
-                            <TextareaField
-                                label="Business Address"
-                                name="address"
-                                value={profileData.address}
-                                onChange={handleInputChange}
-                                icon={MapPin}
-                                placeholder="1234 Main St, City, State, ZIP"
-                            />
-                            <InputField
-                                label="Phone Number"
-                                name="phone"
-                                type="tel "
-                                value={profileData.phone}
-                                onChange={handleInputChange}
-                                icon={Phone}
-                                placeholder="+(1) 234 567 8900"
-                            />
-                        </div>
-                    </div>
                 </div>
-
-                <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end">
-                    <button className="inline-flex items-center justify-center px-4 py-2 h-10 bg-blue-900 hover:bg-blue-800 text-white font-medium text-sm rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled={isUpdating}>
-                        {isUpdating ? (
-                            <>
-                                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                Updating...
-                            </>
-                        ) : (
-                            "Update Profile"
-                        )}
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     );
 };
 
-export default ProfilePage
+export default ProfilePage;

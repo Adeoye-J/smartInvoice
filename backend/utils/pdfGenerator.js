@@ -298,8 +298,10 @@
 // utils/pdfGenerator.js
 
 const path = require('path');
+const fs = require('fs');
 const ejs = require('ejs');
 const puppeteer = require('puppeteer');
+const Settings = require('../models/Settings');
 
 // Helper to generate color variants
 function generateColorVariants(baseColor) {
@@ -320,16 +322,43 @@ function generateColorVariants(baseColor) {
 
 // EXISTING: Invoice PDF Generation
 async function generatePdfBufferFromInvoice(invoice) {
-    const templateName = invoice.templateId || 'classic';
-    const templatePath = path.join(__dirname, '..', 'templates', 'invoices', `${templateName}.ejs`);
-    
-    const colors = generateColorVariants(invoice.brandColor || '#1e40af');
+    // If invoice doesn't include branding/template, try to load user's Settings
+    let templateName = invoice.templateId || null;
+    let brandColor = invoice.brandColor || null;
+
+    if ((!templateName || !brandColor) && invoice.user) {
+        try {
+            const settings = await Settings.findOne({ user: invoice.user }).lean();
+            if (settings) {
+                // Prefer explicit invoiceTemplate/invoiceColor, then fall back to legacy defaultTemplate/primaryColor
+                if (!templateName) templateName = settings.branding?.invoiceTemplate || settings.branding?.defaultTemplate;
+                if (!brandColor) brandColor = settings.branding?.invoiceColor || settings.branding?.primaryColor;
+            }
+        } catch (err) {
+            // if settings lookup fails, continue with defaults
+            console.warn('Failed to load Settings for PDF generation:', err.message || err);
+        }
+    }
+
+    templateName = (templateName || 'classic').toString().replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase();
+
+    // Resolve template path: prefer templates/invoices/<name>.ejs, then templates/<name>.ejs, then invoiceTemplate.ejs
+    let templatePath = path.join(__dirname, '..', 'templates', 'invoices', `${templateName}.ejs`);
+    if (!fs.existsSync(templatePath)) {
+        templatePath = path.join(__dirname, '..', 'templates', `${templateName}.ejs`);
+    }
+    if (!fs.existsSync(templatePath)) {
+        templatePath = path.join(__dirname, '..', 'templates', 'invoiceTemplate.ejs');
+    }
+
+    const colors = generateColorVariants(brandColor || '#1e40af');
     const businessLogo = invoice.billFrom?.logo || null;
     
-    const html = await ejs.renderFile(templatePath, { 
+    const html = await ejs.renderFile(templatePath, {
         invoice,
         colors,
-        businessLogo
+        businessLogo,
+        brandColor: brandColor || colors.primary
     });
 
     const browser = await puppeteer.launch({
@@ -351,16 +380,37 @@ async function generatePdfBufferFromInvoice(invoice) {
 
 // NEW: Receipt PDF Generation
 async function generatePdfBufferFromReceipt(receipt) {
-    const templateName = receipt.templateId || 'classic';
-    const templatePath = path.join(__dirname, '..', 'templates', 'receipts', `${templateName}.ejs`);
-    
-    const colors = generateColorVariants(receipt.brandColor || '#1e40af');
+    let templateName = receipt.templateId || null;
+    let brandColor = receipt.brandColor || null;
+
+    if ((!templateName || !brandColor) && receipt.user) {
+        try {
+            const settings = await Settings.findOne({ user: receipt.user }).lean();
+            if (settings) {
+                if (!templateName) templateName = settings.branding?.receiptTemplate || settings.branding?.defaultTemplate;
+                if (!brandColor) brandColor = settings.branding?.primaryColor;
+            }
+        } catch (err) {
+            console.warn('Failed to load Settings for receipt PDF generation:', err.message || err);
+        }
+    }
+
+    templateName = (templateName || 'classic').toString().replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase();
+
+    // Resolve template path for receipts: templates/receipts/<name>.ejs, or fallback to templates/receipts/classic.ejs
+    let templatePath = path.join(__dirname, '..', 'templates', 'receipts', `${templateName}.ejs`);
+    if (!fs.existsSync(templatePath)) {
+        templatePath = path.join(__dirname, '..', 'templates', 'receipts', `classic.ejs`);
+    }
+
+    const colors = generateColorVariants(brandColor || '#1e40af');
     const businessLogo = receipt.billFrom?.logo || null;
     
     const html = await ejs.renderFile(templatePath, { 
         receipt,
         colors,
-        businessLogo
+        businessLogo,
+        brandColor: brandColor || colors.primary
     });
 
     const browser = await puppeteer.launch({
